@@ -165,6 +165,8 @@ public struct SendAsRecord: SnakeCaseRecord, Sendable, Equatable, Hashable {
 
 public enum PendingActionState: String, Codable, Sendable {
     case queued, held, inFlight = "in_flight", failed
+    /// Sent; kept for a few minutes so undo can queue the inverse.
+    case done
 }
 
 public struct PendingActionRecord: SnakeCaseRecord, Sendable, Equatable, Identifiable {

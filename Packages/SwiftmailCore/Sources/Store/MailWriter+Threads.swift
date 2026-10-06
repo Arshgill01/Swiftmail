@@ -23,7 +23,16 @@ extension MailWriter {
         for row in labelRows {
             labelsByMessage[row["message_id"], default: []].insert(row["label_id"])
         }
-        let union = labelsByMessage.values.reduce(into: Set<String>()) { $0.formUnion($1) }
+        // Gmail keeps trashed and spam messages out of every other view: other labels come
+        // only from messages that are in neither.
+        var union = Set<String>()
+        for labels in labelsByMessage.values {
+            if labels.contains("TRASH") || labels.contains("SPAM") {
+                union.formUnion(labels.intersection(["TRASH", "SPAM", "UNREAD"]))
+            } else {
+                union.formUnion(labels)
+            }
+        }
 
         // Drafts only count when the thread has nothing else.
         let sent = messages.filter { !$0.isDraft }

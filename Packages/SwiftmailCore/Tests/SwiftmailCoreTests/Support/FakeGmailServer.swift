@@ -33,6 +33,7 @@ final class FakeGmailServer: GmailClient, @unchecked Sendable {
         var rateLimitNext = 0
         var serverErrorsNext = 0
         var offline = false
+        var failNext: [GmailError] = []
     }
 
     static let systemLabels: [GmailLabel] = [
@@ -138,6 +139,9 @@ final class FakeGmailServer: GmailClient, @unchecked Sendable {
             state.calls.append(name)
             if state.offline {
                 throw GmailError.offline
+            }
+            if !state.failNext.isEmpty {
+                throw state.failNext.removeFirst()
             }
             if state.rateLimitNext > 0 {
                 state.rateLimitNext -= 1

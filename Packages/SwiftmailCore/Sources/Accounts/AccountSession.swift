@@ -10,6 +10,7 @@ public actor AccountSession {
     public nonisolated let client: any GmailClient
     public nonisolated let database: AppDatabase
     public nonisolated let sync: SyncEngine
+    public nonisolated let actions: ActionQueue
 
     public static let activeInterval: Duration = .seconds(30)
     public static let backgroundInterval: Duration = .seconds(120)
@@ -36,6 +37,7 @@ public actor AccountSession {
         self.client = client
         self.database = database
         sync = SyncEngine(accountID: accountID, client: client, database: database, settings: settings)
+        actions = ActionQueue(accountID: accountID, client: client, database: database)
     }
 
     public func setSink(_ sink: SyncEventSink) async {
@@ -50,6 +52,11 @@ public actor AccountSession {
     /// Starts the sync loop with an immediate first run.
     public func start() {
         guard loopTask == nil else { return }
+        let actions = actions
+        Task {
+            try? await actions.recover()
+            await actions.drain()
+        }
         let (stream, continuation) = AsyncStream.makeStream(of: Void.self, bufferingPolicy: .bufferingNewest(1))
         triggers = continuation
         loopTask = Task {
@@ -70,6 +77,12 @@ public actor AccountSession {
         loopTask = nil
         timerTask = nil
         backfillTask = nil
+    }
+
+    /// Sends queued actions now (after a local change, or when the network returns).
+    public func drainActions() {
+        let actions = actions
+        Task { await actions.drain() }
     }
 
     /// Requests a sync now. Coalesces with a run in progress.
@@ -129,6 +142,7 @@ public actor AccountSession {
         } catch {
             await sync.report(error)
         }
+        await actions.drain()
         for work in afterRun {
             await work()
         }

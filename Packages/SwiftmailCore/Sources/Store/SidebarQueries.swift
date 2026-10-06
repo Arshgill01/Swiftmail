@@ -63,7 +63,7 @@ public enum SidebarQueries {
                 allLabels: Dictionary(labels.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
             ))
         }
-        let outbox = try Int.fetchOne(db, sql: "SELECT COUNT(*) FROM pending_actions WHERE kind = 'send'") ?? 0
+        let outbox = try Int.fetchOne(db, sql: "SELECT COUNT(*) FROM pending_actions WHERE kind = 'send' AND state != 'done'") ?? 0
         return SidebarSnapshot(accounts: result, unifiedInboxUnread: unifiedUnread, outboxCount: outbox)
     }
 }
