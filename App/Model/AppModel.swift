@@ -18,11 +18,13 @@ final class AppModel {
 
     @ObservationIgnored private var observations: [Task<Void, Never>] = []
     @ObservationIgnored private var startedSessions: Set<String> = []
+    @ObservationIgnored let triggers: SyncTriggers
     @ObservationIgnored let logger = Logger(subsystem: "app.swiftmail", category: "App")
 
     init(database: AppDatabase, accountManager: AccountManager) {
         self.database = database
         self.accountManager = accountManager
+        triggers = SyncTriggers { await accountManager.allSessions() }
     }
 
     static func live() -> AppModel {
@@ -64,6 +66,7 @@ final class AppModel {
     func start() {
         observeAccounts()
         observeSidebar()
+        triggers.start()
         Task {
             do {
                 for session in try await accountManager.restoreSessions() {

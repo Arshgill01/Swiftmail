@@ -13,6 +13,7 @@ extension SyncEngine {
         try await RequestPriority.$current.withValue(.background) {
             while !Task.isCancelled {
                 guard let account = try await account(), account.initialSyncDone, !account.backfillDone else { return }
+                resyncing = account.status == .syncingFull
                 let nowDate = now()
                 var cursor = BackfillCursor(account.backfillCursor)
                     ?? BackfillCursor(phase: .recent, boundary: Int64(nowDate.addingTimeInterval(-Self.fullBodyAge).timeIntervalSince1970), pageToken: nil)
@@ -20,7 +21,9 @@ extension SyncEngine {
                     query: cursor.query, pageToken: cursor.pageToken, maxResults: Self.backfillPageSize
                 ))
                 let refs = list.threads ?? []
-                let written = try await fetchAndWrite(refs: refs, format: cursor.phase == .recent ? .full : .metadata, skipExisting: true)
+                // A resync re-lists everything as metadata and keeps the bodies already downloaded.
+                let format: MessageFormat = cursor.phase == .recent && !resyncing ? .full : .metadata
+                let written = try await fetchAndWrite(refs: refs, format: format, skipExisting: !resyncing)
                 var done = false
                 if let next = list.nextPageToken {
                     cursor.pageToken = next
@@ -41,6 +44,9 @@ extension SyncEngine {
                         sql: "UPDATE accounts SET backfill_cursor = ?, backfill_done = ? WHERE id = ?",
                         arguments: [saved, finished, id]
                     )
+                }
+                if done, resyncing {
+                    try await finishFullResync()
                 }
                 let count = try await database.reader.read { db in try ThreadQueries.threadCount(db, accountID: id) }
                 publish(done ? .idle : .backfilling(threads: count), success: true)

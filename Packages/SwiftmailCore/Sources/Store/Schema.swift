@@ -146,4 +146,15 @@ enum Schema {
         CREATE INDEX messages_draft ON messages(account_id, draft_id) WHERE draft_id IS NOT NULL;
         """)
     }
+
+    /// Threads listed during a history-expired resync, to prune what vanished on the server.
+    static func v3(_ db: Database) throws {
+        try db.execute(sql: """
+        CREATE TABLE resync_seen (
+          account_id TEXT NOT NULL, thread_id TEXT NOT NULL,
+          PRIMARY KEY (account_id, thread_id)
+        );
+        ALTER TABLE accounts ADD COLUMN labels_refreshed_at INTEGER;
+        """)
+    }
 }

@@ -2,7 +2,8 @@ import Foundation
 import os
 
 /// Everything that belongs to one signed-in account: its token provider, Gmail client,
-/// sync engine and (from M5) action queue. Owns the account's background tasks.
+/// sync engine and action queue. Owns the account's sync loop: one run at a time, and a
+/// trigger during a run schedules exactly one more run.
 public actor AccountSession {
     public nonisolated let accountID: String
     public nonisolated let tokens: TokenProvider
@@ -10,8 +11,17 @@ public actor AccountSession {
     public nonisolated let database: AppDatabase
     public nonisolated let sync: SyncEngine
 
-    private var bootstrapTask: Task<Void, Never>?
+    public static let activeInterval: Duration = .seconds(30)
+    public static let backgroundInterval: Duration = .seconds(120)
+
+    private var triggers: AsyncStream<Void>.Continuation?
+    private var loopTask: Task<Void, Never>?
+    private var timerTask: Task<Void, Never>?
     private var backfillTask: Task<Void, Never>?
+    private var isAppActive = true
+    private var isPaused = false
+    private(set) var runCount = 0
+    private var afterRun: [@Sendable () async -> Void] = []
     private let logger = Logger(subsystem: "app.swiftmail", category: "Session")
 
     public init(
@@ -32,30 +42,95 @@ public actor AccountSession {
         await sync.setSink(sink)
     }
 
-    /// Runs the first sync if it never finished, then resumes the backfill.
+    /// Work to run after every sync run, e.g. draining the action queue.
+    public func addAfterRun(_ work: @escaping @Sendable () async -> Void) {
+        afterRun.append(work)
+    }
+
+    /// Starts the sync loop with an immediate first run.
     public func start() {
-        guard bootstrapTask == nil else { return }
-        bootstrapTask = Task { await bootstrap() }
+        guard loopTask == nil else { return }
+        let (stream, continuation) = AsyncStream.makeStream(of: Void.self, bufferingPolicy: .bufferingNewest(1))
+        triggers = continuation
+        loopTask = Task {
+            for await _ in stream {
+                await runOnce()
+            }
+        }
+        scheduleTimer()
+        continuation.yield()
     }
 
     public func stop() {
-        bootstrapTask?.cancel()
+        triggers?.finish()
+        triggers = nil
+        loopTask?.cancel()
+        timerTask?.cancel()
         backfillTask?.cancel()
-        bootstrapTask = nil
+        loopTask = nil
+        timerTask = nil
         backfillTask = nil
     }
 
-    private func bootstrap() async {
+    /// Requests a sync now. Coalesces with a run in progress.
+    public func triggerSync() {
+        triggers?.yield()
+    }
+
+    /// 30 seconds while the app is active, 120 in the background.
+    public func setAppActive(_ active: Bool) {
+        guard active != isAppActive else { return }
+        isAppActive = active
+        scheduleTimer()
+        if active {
+            triggerSync()
+        }
+    }
+
+    /// Pauses polling while the Mac sleeps.
+    public func pause() {
+        isPaused = true
+        timerTask?.cancel()
+        timerTask = nil
+    }
+
+    /// Resumes polling and syncs at once (wake from sleep).
+    public func resume() {
+        isPaused = false
+        scheduleTimer()
+        triggerSync()
+    }
+
+    private func scheduleTimer() {
+        timerTask?.cancel()
+        guard !isPaused, triggers != nil else { return }
+        let interval = isAppActive ? Self.activeInterval : Self.backgroundInterval
+        timerTask = Task { [weak self] in
+            while !Task.isCancelled {
+                try? await Task.sleep(for: interval)
+                guard !Task.isCancelled else { return }
+                await self?.triggerSync()
+            }
+        }
+    }
+
+    private func runOnce() async {
+        runCount += 1
         do {
             guard let account = try await database.account(id: accountID) else { return }
+            // Keep cached mail and queued actions; wait for the user to sign in again.
+            guard account.status != .needsSignIn else { return }
             if !account.initialSyncDone {
                 try await sync.firstSync()
+            } else {
+                try await sync.incrementalSync()
             }
             startBackfill()
         } catch {
             await sync.report(error)
-            // Let a later trigger retry the bootstrap.
-            bootstrapTask = nil
+        }
+        for work in afterRun {
+            await work()
         }
     }
 

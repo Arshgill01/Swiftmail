@@ -12,6 +12,8 @@ public actor SyncEngine {
     let now: @Sendable () -> Date
     var sink: SyncEventSink
     var status = SyncStatus()
+    /// True while a history-expired resync re-lists the mailbox.
+    var resyncing = false
     let logger = Logger(subsystem: "app.swiftmail", category: "Sync")
     let signposter = OSSignposter(subsystem: "app.swiftmail", category: "Sync")
 
@@ -199,7 +201,11 @@ public actor SyncEngine {
         let own = try await ownAddresses()
         let knownBefore = Set(localState.keys)
         let fetched = threads
+        let markSeen = resyncing
         try await database.writer.write { db in
+            if markSeen {
+                try Self.markSeen(db, accountID: id, threadIDs: refs.map(\.id))
+            }
             for thread in fetched {
                 // A thread that became local while this fetch was in flight is newer than our copy.
                 if skipExisting, !knownBefore.contains(thread.id),

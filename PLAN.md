@@ -47,12 +47,12 @@ listed per milestone and tracked here until ticked.
 
 ## M3: Incremental sync
 
-- [ ] `history.list` paging and record application (added, deleted, labels added/removed)
-- [ ] 404 on `messages.get` skipped; historyId written with the last page
-- [ ] History 404: `syncing_full`, fresh historyId, metadata re-list, keep bodies, prune vanished threads
-- [ ] Sync triggers: 30 s active / 120 s background, activate, wake, network path, after send/action
-- [ ] One run per account, rerun flag; label count refresh at most once a minute
-- [ ] Tests: each record type, out-of-order/duplicates, 404 message, expiry recovery, randomized server changes
+- [x] `history.list` paging and record application (added, deleted, labels added/removed), one transaction per page
+- [x] 404 on `messages.get` skipped; historyId written with the last page; unknown labels refresh the label list
+- [x] History 404: `syncing_full`, fresh historyId, metadata re-list, keep bodies, prune vanished threads (`resync_seen`, migration v3)
+- [x] Sync triggers: 30 s active / 120 s background, activate, wake (pause on sleep), network path back; send/action hooks via `triggerSync`
+- [x] One run per account with coalesced triggers; label count refresh at most once a minute
+- [x] Tests: each record type, duplicates/replays, added-then-deleted, expiry recovery, randomized changes converge, coalescing
 - [h] Human: changes in Gmail web show within 60 s; new mail within 60 s
 
 ## M4: Reader

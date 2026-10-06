@@ -35,6 +35,7 @@ public struct AccountRecord: SnakeCaseRecord, Sendable, Equatable, Identifiable,
     public var addedAt: Int64
     public var initialSyncDone: Bool = false
     public var lastSyncAt: Int64?
+    public var labelsRefreshedAt: Int64?
 
     public init(id: String, email: String, displayName: String? = nil, avatarUrl: String? = nil, sortOrder: Int = 0, addedAt: Int64) {
         self.id = id

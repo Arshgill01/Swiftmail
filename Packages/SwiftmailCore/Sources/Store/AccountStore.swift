@@ -58,7 +58,7 @@ public extension AppDatabase {
             """, arguments: [id])
             for table in [
                 "thread_labels", "message_labels", "message_bodies", "attachments", "contacts",
-                "send_as", "pending_actions", "remote_content_allow",
+                "send_as", "pending_actions", "remote_content_allow", "resync_seen",
             ] {
                 try db.execute(sql: "DELETE FROM \(table) WHERE account_id = ?", arguments: [id])
             }
