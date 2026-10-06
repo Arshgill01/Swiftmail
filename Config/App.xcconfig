@@ -1,0 +1,5 @@
+// Shared build settings for the app target. Secrets are optional so the
+// project still builds before Google Cloud is set up.
+GOOGLE_CLIENT_ID =
+GOOGLE_CLIENT_SECRET =
+#include? "Secrets.xcconfig"
