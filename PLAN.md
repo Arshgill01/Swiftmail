@@ -109,12 +109,29 @@ listed per milestone and tracked here until ticked.
 
 ## M8: Notifications and polish
 
-- [ ] Notification policy (new, INBOX+UNREAD, Primary, not from self, no first sync, summary > 10)
-- [ ] UNUserNotificationCenter: permission after first inbox sync, Archive / Mark as Read actions, open thread
-- [ ] Remove delivered notifications when read or archived
-- [ ] Dock badge; default mail app button; all Settings
-- [ ] Empty and error states, accessibility labels, signposts for every budget
+- [x] Notification policy (new, INBOX+UNREAD, Primary when tabs on, not from self, none in first sync or resync, summary > 10)
+- [x] UNUserNotificationCenter: permission after the first inbox sync, Archive / Mark as Read actions, click opens the thread
+- [x] Delivered notifications removed when read or archived here or in Gmail web
+- [x] Dock badge (unified inbox, Primary only when tabs on, can be turned off); default mail app button
+- [x] Settings: undo-send delay, density, text size, remote images, Dock badge, backfill window, per-account tabs and notifications
+- [x] Empty and error states (empty inbox, offline, needs sign-in, sync error, outbox), VoiceOver labels on rows and icon buttons
+- [x] Signposts: first list render, first body rendered, history sync, first sync, local search, local action
+- [x] Performance pass (see below); fixed a full scan in thread recompute (105 ms → ~3 ms per action)
 - [h] Human: tick the switch-ready checklist
+
+## Performance budgets (measured on the dev Mac, debug build)
+
+| Measure | Budget | Measured |
+| --- | --- | --- |
+| Cold launch to cached list (30k threads) | < 500 ms | 368–419 ms |
+| Open a cached thread (store read) | < 50 ms | passes perf test |
+| Local action (archive) | < 16 ms | ~3 ms (20 archives in 59 ms) |
+| Local search, 100k messages | < 100 ms | passes perf test (4 queries) |
+| Inbox first page / 10k-row page | — | < 50 ms / < 500 ms |
+| Memory with 100k messages cached | < 400 MB | 58 MB footprint (89 MB RSS) |
+| New mail while open | < 60 s | 30 s polling interval |
+| First sign-in to usable inbox | < 10 s | needs a real account |
+| 120 Hz scrolling of 10k threads | no hitches | needs the human (Instruments) |
 
 ## Human checks at each milestone
 

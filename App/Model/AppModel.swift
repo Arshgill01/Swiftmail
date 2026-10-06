@@ -24,6 +24,7 @@ final class AppModel {
     let undo = UndoCenter()
     @ObservationIgnored let keyboard = KeyboardShortcuts()
     @ObservationIgnored var openWindowAction: OpenWindowAction?
+    @ObservationIgnored let notifications = NotificationService()
     @ObservationIgnored var reopenedCompose = false
     /// The app's single model, for the app delegate (quit and mailto).
     @ObservationIgnored nonisolated(unsafe) weak static var shared: AppModel?
@@ -82,6 +83,8 @@ final class AppModel {
         observeAccounts()
         observeSidebar()
         triggers.start()
+        notifications.app = self
+        notifications.start()
         readerServices.prewarm()
         keyboard.install()
         Task {
@@ -120,6 +123,7 @@ final class AppModel {
             do {
                 for try await snapshot in observation.values(in: reader) {
                     self?.sidebar = snapshot
+                    self?.notifications.updateBadge(unread: snapshot.unifiedInboxUnread)
                 }
             } catch {
                 self?.logger.error("sidebar observation failed")
@@ -136,9 +140,20 @@ final class AppModel {
     private func startSession(_ session: AccountSession) async {
         let id = session.accountID
         guard startedSessions.insert(id).inserted else { return }
-        let sink = SyncEventSink(status: { status in
-            Task { @MainActor [weak self] in self?.syncStatus[id] = status }
-        })
+        let sink = SyncEventSink(
+            status: { status in
+                Task { @MainActor [weak self] in self?.syncStatus[id] = status }
+            },
+            inboxReady: {
+                Task { @MainActor [weak self] in self?.notifications.requestPermissionIfNeeded() }
+            },
+            newMail: { items in
+                Task { @MainActor [weak self] in await self?.notify(items) }
+            },
+            removedMessages: { messageIDs in
+                Task { @MainActor [weak self] in self?.notifications.remove(messageIDs: messageIDs, accountID: id) }
+            }
+        )
         await session.setSink(sink)
         await configureActions(session)
         await session.start()

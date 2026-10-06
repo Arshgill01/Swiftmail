@@ -72,4 +72,19 @@ final class StorePerformanceTests: XCTestCase {
             XCTAssertLessThan(Date().timeIntervalSince(start), 0.1, "local search for \(text) must answer in under 100 ms")
         }
     }
+
+    func testLocalActionUnder16ms() async throws {
+        let db = try database()
+        // Warm up the statement cache, as a running app would be.
+        try await MailActions.perform(.star, threads: [ThreadSummary.ID(accountID: "acc", threadID: "t000500")], in: db)
+        var worst = 0.0
+        for index in 0 ..< 20 {
+            let id = ThreadSummary.ID(accountID: "acc", threadID: String(format: "t%06d", 1000 + index))
+            let start = Date()
+            try await MailActions.perform(.archive, threads: [id], in: db)
+            let elapsed = Date().timeIntervalSince(start)
+            worst = max(worst, elapsed)
+        }
+        XCTAssertLessThan(worst, 0.016, "archive must apply locally in under 16 ms (worst \(Int(worst * 1000)) ms)")
+    }
 }

@@ -1,5 +1,6 @@
 import Foundation
 import GRDB
+import os
 
 /// What undo needs to reverse one action for one account.
 public struct UndoRecord: Sendable, Equatable {
@@ -12,8 +13,12 @@ public struct UndoRecord: Sendable, Equatable {
 /// transaction, so the list updates at once and the queue syncs it later.
 public enum MailActions {
     /// Applies `action` to the threads, one pending row per account. Returns undo records.
+    static let signposter = OSSignposter(subsystem: "app.swiftmail", category: "Actions")
+
     @discardableResult
     public static func perform(_ action: MailAction, threads: [ThreadSummary.ID], in database: AppDatabase) async throws -> [UndoRecord] {
+        let interval = signposter.beginInterval("LocalAction")
+        defer { signposter.endInterval("LocalAction", interval) }
         let byAccount = Dictionary(grouping: threads, by: \.accountID)
         return try await database.writer.write { db in
             var records: [UndoRecord] = []

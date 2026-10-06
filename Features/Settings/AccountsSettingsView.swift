@@ -21,13 +21,21 @@ struct AccountsSettingsView: View {
                     Text("No accounts").foregroundStyle(.secondary)
                 }
                 ForEach(model.accounts) { account in
-                    HStack {
-                        AccountRow(account: account)
-                        Spacer()
-                        if account.status == .needsSignIn {
-                            Button("Sign In") { model.addAccount() }
+                    VStack(alignment: .leading, spacing: 6) {
+                        HStack {
+                            AccountRow(account: account)
+                            Spacer()
+                            if account.status == .needsSignIn {
+                                Button("Sign In") { model.addAccount() }
+                            }
+                            Button("Remove…") { pendingRemoval = account }
                         }
-                        Button("Remove…") { pendingRemoval = account }
+                        // The API can't tell whether inbox tabs are on, so it's a switch.
+                        Toggle("Inbox category tabs", isOn: Binding(
+                            get: { account.categoriesEnabled },
+                            set: { enabled in Task { try? await model.database.setCategoriesEnabled(account.id, enabled) } }
+                        ))
+                        .font(.callout)
                     }
                 }
             }

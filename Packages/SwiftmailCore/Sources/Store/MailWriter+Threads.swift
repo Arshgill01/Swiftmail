@@ -14,11 +14,12 @@ extension MailWriter {
             try db.execute(sql: "DELETE FROM threads WHERE account_id = ? AND id = ?", arguments: [accountID, threadID])
             return
         }
+        // By primary key: a join on thread_id lets SQLite pick a full scan of message_labels.
+        let ids = messages.map(\.id)
         let labelRows = try Row.fetchAll(db, sql: """
-        SELECT ml.message_id, ml.label_id FROM message_labels ml
-        JOIN messages m ON m.account_id = ml.account_id AND m.id = ml.message_id
-        WHERE m.account_id = ? AND m.thread_id = ?
-        """, arguments: [accountID, threadID])
+        SELECT message_id, label_id FROM message_labels
+        WHERE account_id = ? AND message_id IN (\(databaseQuestionMarks(count: ids.count)))
+        """, arguments: StatementArguments([accountID] + ids))
         var labelsByMessage: [String: Set<String>] = [:]
         for row in labelRows {
             labelsByMessage[row["message_id"], default: []].insert(row["label_id"])

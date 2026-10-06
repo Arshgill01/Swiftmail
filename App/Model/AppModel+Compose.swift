@@ -173,6 +173,16 @@ extension AppModel {
         }
         return waiting
     }
+
+    /// The backfill window changed: download again from the newest mail.
+    func restartBackfill() {
+        Task {
+            for session in await accountManager.allSessions() {
+                try? await session.sync.restartBackfill()
+                await session.startBackfill()
+            }
+        }
+    }
 }
 
 /// A small floating panel shown while quitting waits for sends.

@@ -8,6 +8,15 @@ from a local SQLite store, and Gmail sync happens in the background.
 - Lint: `scripts/lint.sh` (`--fix` to auto-format)
 - Disk guard: `scripts/disk-check.sh` fails when less than 7 GB is free (`MIN_FREE_GB` overrides)
 
+Debug-build helpers (never in release builds):
+
+- `scripts/preview-db.sh` writes a synthetic 30,000-thread mailbox plus the test corpus to
+  `Preview.sqlite` in the app container; launch with `--database Preview.sqlite` to use it.
+- `--snapshot <name.png> [--select n] [--search text] [--commands archive,reply]
+  [--snapshot-window compose] [--appearance dark|light]` renders a window to the container's
+  tmp folder and quits.
+- `--keychain-selftest` checks Keychain access inside the sandbox.
+
 Requirements: macOS 15 or later on Apple silicon, Xcode 16.3 or later,
 `brew install xcodegen swiftlint swiftformat`.
 

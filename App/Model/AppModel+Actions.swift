@@ -9,6 +9,9 @@ extension AppModel {
         Task {
             do {
                 let records = try await MailActions.perform(action, threads: threads, in: database)
+                if action == .markRead || action.removesFromList {
+                    notifications.remove(threads: threads)
+                }
                 if showToast {
                     undo.push(records)
                 }
@@ -63,6 +66,37 @@ extension AppModel {
         case .forward: reply(.forward, window: window)
         case .search: window.isSearchFocused = true
         default: break
+        }
+    }
+
+    /// Posts notifications for new mail that passes the policy.
+    func notify(_ items: [NewMailItem]) async {
+        let plan = try? await database.reader.read { db in
+            try NotificationPolicy.plan(items, db: db) { accountID in
+                let defaults = UserDefaults.standard
+                return NotificationPolicy.AccountSettings(
+                    enabled: defaults.object(forKey: Preferences.accountKey(Preferences.notificationsEnabled, accountID)) as? Bool ?? true,
+                    primaryOnly: defaults.object(forKey: Preferences.accountKey(Preferences.notifyPrimaryOnly, accountID)) as? Bool ?? true
+                )
+            }
+        }
+        if let plan {
+            notifications.post(plan)
+        }
+    }
+
+    /// Clicking a notification opens the thread in the main window.
+    func openThread(_ id: ThreadSummary.ID?, accountID: String) {
+        NSApp.activate(ignoringOtherApps: true)
+        let window = NSApp.windows.first { WindowRegistry.model(for: $0) != nil }
+        guard let window, let model = WindowRegistry.model(for: window) else {
+            openWindowAction?(id: "main")
+            return
+        }
+        window.makeKeyAndOrderFront(nil)
+        model.mailbox = Mailbox(accountID: accountID, kind: .inbox)
+        if let id {
+            model.selectedThreads = [id]
         }
     }
 }
