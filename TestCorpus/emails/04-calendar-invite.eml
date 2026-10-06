@@ -1,0 +1,54 @@
+Content-Type: multipart/mixed; boundary="===============6478156871446438102=="
+MIME-Version: 1.0
+From: Alex Rivera <alex@example.com>
+To: me@example.com
+Subject: Invitation: Design review
+Date: Tue, 06 Oct 2026 13:31:00 +0000
+Message-ID: <f0fd3c25294c@corpus.example.com>
+MIME-Version: 1.0
+
+--===============6478156871446438102==
+Content-Type: multipart/alternative;
+ boundary="===============3902637014566152337=="
+MIME-Version: 1.0
+
+--===============3902637014566152337==
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+
+WW91J3JlIGludml0ZWQ6IERlc2lnbiByZXZpZXcsIFRodSA4IE9jdCAyMDI2IDE1OjAwIFVUQw==
+
+--===============3902637014566152337==
+Content-Type: text/html; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+
+PHA+WW91J3JlIGludml0ZWQ6IDxiPkRlc2lnbiByZXZpZXc8L2I+PC9wPg==
+
+--===============3902637014566152337==
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Type: text/calendar; charset="utf-8"; method="REQUEST"
+
+QkVHSU46VkNBTEVOREFSDQpWRVJTSU9OOjIuMA0KTUVUSE9EOlJFUVVFU1QNCkJFR0lOOlZFVkVO
+VA0KVUlEOnJldmlldy0xQGNvcnB1cw0KRFRTVEFSVDoyMDI2MTAwOFQxNTAwMDBaDQpEVEVORDoy
+MDI2MTAwOFQxNjAwMDBaDQpTVU1NQVJZOkRlc2lnbiByZXZpZXcNCk9SR0FOSVpFUjptYWlsdG86
+YWxleEBleGFtcGxlLmNvbQ0KQVRURU5ERUU6bWFpbHRvOm1lQGV4YW1wbGUuY29tDQpFTkQ6VkVW
+RU5UDQpFTkQ6VkNBTEVOREFSDQo=
+
+--===============3902637014566152337==--
+
+--===============6478156871446438102==
+Content-Type: application/ics; name="invite.ics"
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="invite.ics"
+
+QkVHSU46VkNBTEVOREFSDQpWRVJTSU9OOjIuMA0KTUVUSE9EOlJFUVVFU1QNCkJFR0lOOlZFVkVO
+VA0KVUlEOnJldmlldy0xQGNvcnB1cw0KRFRTVEFSVDoyMDI2MTAwOFQxNTAwMDBaDQpEVEVORDoy
+MDI2MTAwOFQxNjAwMDBaDQpTVU1NQVJZOkRlc2lnbiByZXZpZXcNCk9SR0FOSVpFUjptYWlsdG86
+YWxleEBleGFtcGxlLmNvbQ0KQVRURU5ERUU6bWFpbHRvOm1lQGV4YW1wbGUuY29tDQpFTkQ6VkVW
+RU5UDQpFTkQ6VkNBTEVOREFSDQo=
+
+--===============6478156871446438102==--

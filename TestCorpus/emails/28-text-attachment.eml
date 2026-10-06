@@ -1,0 +1,25 @@
+Content-Type: multipart/mixed; boundary="===============0963860136636600408=="
+MIME-Version: 1.0
+From: Alex Rivera <alex@example.com>
+To: me@example.com
+Subject: Notes
+Date: Tue, 06 Oct 2026 13:31:00 +0000
+Message-ID: <f4c6f851b00d@corpus.example.com>
+MIME-Version: 1.0
+
+--===============0963860136636600408==
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+
+Tm90ZXMgYmVsb3cgYW5kIGluIHRoZSBhdHRhY2htZW50Lg==
+
+--===============0963860136636600408==
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="notes.txt"
+
+YXR0YWNobWVudCB0ZXh0Cg==
+
+--===============0963860136636600408==--

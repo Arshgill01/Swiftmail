@@ -1,0 +1,45 @@
+Content-Type: multipart/alternative;
+ boundary="===============0086037988579355032=="
+MIME-Version: 1.0
+From: Alex Rivera <alex@example.com>
+To: me@example.com
+Subject: Weekly digest: 5 things worth reading
+Date: Tue, 06 Oct 2026 13:31:00 +0000
+Message-ID: <96e5c3db02d9@corpus.example.com>
+MIME-Version: 1.0
+
+--===============0086037988579355032==
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+
+VGhpcyB3ZWVrOiBmaXZlIGxpbmtzIHdlIGVuam95ZWQuIFJlYWQ6IGh0dHBzOi8vbmV3c2xldHRl
+ci5leGFtcGxlLmNvbS9yZWFkP2lkPTQy
+
+--===============0086037988579355032==
+Content-Type: text/html; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+
+CjxodG1sPjxoZWFkPjxzdHlsZT4uYnRue2JhY2tncm91bmQ6IzFhNzNlODtjb2xvcjojZmZmO3Bh
+ZGRpbmc6MTBweCAxNnB4O2JvcmRlci1yYWRpdXM6NHB4fTwvc3R5bGU+PC9oZWFkPgo8Ym9keSBi
+Z2NvbG9yPSIjZjRmNGY0IiBzdHlsZT0ibWFyZ2luOjAiPgo8dGFibGUgd2lkdGg9IjYwMCIgYWxp
+Z249ImNlbnRlciIgY2VsbHBhZGRpbmc9IjAiIGNlbGxzcGFjaW5nPSIwIiBiZ2NvbG9yPSIjZmZm
+ZmZmIiBzdHlsZT0iZm9udC1mYW1pbHk6SGVsdmV0aWNhIj4KPHRyPjx0ZCBzdHlsZT0icGFkZGlu
+ZzoyNHB4Ij48aW1nIHNyYz0iaHR0cHM6Ly9uZXdzbGV0dGVyLmV4YW1wbGUuY29tL2xvZ28ucG5n
+IiB3aWR0aD0iMTIwIiBoZWlnaHQ9IjQwIiBhbHQ9IkRpZ2VzdCI+PC90ZD48L3RyPgo8dHI+PHRk
+IHN0eWxlPSJwYWRkaW5nOjAgMjRweDtjb2xvcjojMzMzIj4KPGgxIHN0eWxlPSJmb250LXNpemU6
+MjJweCI+VGhpcyB3ZWVrPC9oMT4KPHA+Rml2ZSBsaW5rcyB3ZSBlbmpveWVkLCBmcm9tIGJyZWFk
+IGJha2luZyB0byBvcmJpdGFsIG1lY2hhbmljcy48L3A+CjxwPjxhIGNsYXNzPSJidG4iIGhyZWY9
+Imh0dHBzOi8vbmV3c2xldHRlci5leGFtcGxlLmNvbS9yZWFkP2lkPTQyIj5SZWFkIHRoZSBpc3N1
+ZTwvYT48L3A+Cjx0YWJsZSB3aWR0aD0iMTAwJSI+PHRyPjx0ZCB3aWR0aD0iNTAlIj48aW1nIHNy
+Yz0iaHR0cHM6Ly9uZXdzbGV0dGVyLmV4YW1wbGUuY29tL2EuanBnIiB3aWR0aD0iMjYwIj48L3Rk
+Pgo8dGQgd2lkdGg9IjUwJSI+PGltZyBzcmM9Imh0dHA6Ly9jZG4uZXhhbXBsZS5uZXQvYi5qcGci
+IHdpZHRoPSIyNjAiPjwvdGQ+PC90cj48L3RhYmxlPgo8L3RkPjwvdHI+Cjx0cj48dGQgc3R5bGU9
+InBhZGRpbmc6MjRweDtmb250LXNpemU6MTFweDtjb2xvcjojOTk5Ij5Zb3UgZ2V0IHRoaXMgYmVj
+YXVzZSB5b3Ugc3Vic2NyaWJlZC4KPGEgaHJlZj0iaHR0cHM6Ly9uZXdzbGV0dGVyLmV4YW1wbGUu
+Y29tL3Vuc3Vic2NyaWJlIj5VbnN1YnNjcmliZTwvYT48L3RkPjwvdHI+CjwvdGFibGU+CjxpbWcg
+c3JjPSJodHRwczovL3RyYWNrLmV4YW1wbGUuY29tL29wZW4uZ2lmP3U9MTIzIiB3aWR0aD0iMSIg
+aGVpZ2h0PSIxIiBhbHQ9IiI+CjwvYm9keT48L2h0bWw+
+
+--===============0086037988579355032==--

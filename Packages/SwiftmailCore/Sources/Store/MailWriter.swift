@@ -162,11 +162,16 @@ public enum MailWriter {
             accountId: accountID, messageId: messageID, html: decoded.html, plain: decoded.plain,
             displayHtml: nil, bodyText: bodyText, fetchedAt: Date().millis
         )
-        // Keep the sanitized rendering when the source did not change.
-        if let previous, previous.html == decoded.html, previous.plain == decoded.plain {
+        // Sanitize once; keep the stored rendering when the source did not change.
+        if let previous, previous.html == decoded.html, previous.plain == decoded.plain, previous.displayHtml != nil {
             body.displayHtml = previous.displayHtml
             body.hasRemoteContent = previous.hasRemoteContent
             body.trackerCount = previous.trackerCount
+        } else {
+            let rendered = BodyRenderer.render(decoded, accountID: accountID, messageID: messageID)
+            body.displayHtml = rendered.html
+            body.hasRemoteContent = rendered.hasRemoteContent
+            body.trackerCount = rendered.trackerCount
         }
         try body.save(db)
 

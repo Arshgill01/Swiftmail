@@ -1,0 +1,26 @@
+Content-Type: multipart/mixed; boundary="===============3034059581776875040=="
+MIME-Version: 1.0
+From: Alex Rivera <alex@example.com>
+To: me@example.com
+Subject: CV
+Date: Tue, 06 Oct 2026 13:31:00 +0000
+Message-ID: <a5c8c3544bc4@corpus.example.com>
+MIME-Version: 1.0
+
+--===============3034059581776875040==
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+
+UmVwb3J0IGF0dGFjaGVkLg==
+
+--===============3034059581776875040==
+Content-Type: application/pdf
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename*=utf-8''r%C3%A9sum%C3%A9%20%E2%80%93%202026.pdf
+
+JVBERi0xLjQKJWZha2UK
+
+--===============3034059581776875040==--

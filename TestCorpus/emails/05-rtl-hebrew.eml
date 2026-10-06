@@ -1,0 +1,26 @@
+Content-Type: multipart/alternative;
+ boundary="===============1299231795781363714=="
+MIME-Version: 1.0
+From: Alex Rivera <alex@example.com>
+To: me@example.com
+Subject: =?utf-8?b?16nXnNeV150g16LXldec150=?=
+Date: Tue, 06 Oct 2026 13:31:00 +0000
+Message-ID: <60d3a0ea6eab@corpus.example.com>
+MIME-Version: 1.0
+
+--===============1299231795781363714==
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+
+16nXnNeV150hINeW15TXlSDXnteh16gg15HXoteR16jXmdeqLg==
+
+--===============1299231795781363714==
+Content-Type: text/html; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+
+PGRpdiBkaXI9InJ0bCI+PHA+16nXnNeV150hINeW15TXlSDXnteh16gg15HXoteR16jXmdeqINei
+150gPGI+15TXk9eS16nXlDwvYj4g15XXnteh16TXqCAyMDI2LjwvcD48L2Rpdj4=
+
+--===============1299231795781363714==--
