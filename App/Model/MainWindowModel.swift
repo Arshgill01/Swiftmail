@@ -10,7 +10,9 @@ final class MainWindowModel {
     var mailbox: Mailbox? = .allInboxes {
         didSet {
             if oldValue != mailbox {
-                selectedThreads = []; cursor = nil
+                selectedThreads = []
+                cursor = nil
+                search.clear()
             }
         }
     }
@@ -37,6 +39,7 @@ final class MainWindowModel {
     var isSearchFocused = false
     let list = ThreadListModel()
     let reader = ReaderModel()
+    let search = SearchModel()
     @ObservationIgnored weak var app: AppModel?
 
     enum Sheet: Identifiable {
@@ -91,7 +94,12 @@ final class MainWindowModel {
         case .previousMessage: reader.moveFocus(by: -1)
         case .open: openCursor()
         case .expandAll: reader.expandAll()
-        case .back: selectedThreads = []
+        case .back:
+            if selectedThreads.isEmpty, search.isActive {
+                search.clear()
+            } else {
+                selectedThreads = []
+            }
         case .undo: app?.undoLast()
         case .goInbox: go(.inbox)
         case .goStarred: go(.starred)

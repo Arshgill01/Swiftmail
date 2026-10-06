@@ -28,6 +28,26 @@ final class ThreadListModel {
         let category: InboxCategory?
     }
 
+    /// Shows search results (kept live from the store) instead of the mailbox.
+    func observeSearch(database: AppDatabase, ids: [ThreadSummary.ID]) {
+        key = nil
+        self.database = database
+        observation?.cancel()
+        reachedServerEnd = true
+        let observation = ValueObservation.tracking { db in try ThreadQueries.threads(db, ids: ids) }.removeDuplicates()
+        let reader = database.reader
+        self.observation = Task { [weak self] in
+            do {
+                for try await threads in observation.values(in: reader, scheduling: .immediate) {
+                    self?.threads = threads
+                    self?.hasLoaded = true
+                }
+            } catch {
+                Self.logger.error("search observation failed")
+            }
+        }
+    }
+
     func observe(database: AppDatabase, mailbox: Mailbox?, category: InboxCategory?) {
         guard let mailbox else {
             observation?.cancel()

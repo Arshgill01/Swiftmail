@@ -26,6 +26,11 @@
                     NotificationCenter.default.post(name: selectNotification, object: index)
                     try? await Task.sleep(for: .seconds(3))
                 }
+                if let text = argument("--search"), let window = NSApp.windows.first(where: \.isVisible),
+                   let model = WindowRegistry.model(for: window) {
+                    model.search.text = text
+                    try? await Task.sleep(for: .seconds(2))
+                }
                 // `--commands archive,nextThread` runs commands on the window, as shortcuts would.
                 if let commands = argument("--commands"), let window = NSApp.windows.first(where: \.isVisible),
                    let model = WindowRegistry.model(for: window) {

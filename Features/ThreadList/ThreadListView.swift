@@ -9,6 +9,7 @@ struct ThreadListView: View {
     }
 
     @AppStorage(Preferences.listDensity) private var densityRaw = ListDensity.comfortable.rawValue
+    @FocusState private var searchFocused: Bool
 
     var body: some View {
         if window.mailbox?.kind == .outbox {
@@ -49,9 +50,31 @@ struct ThreadListView: View {
                 }
             }
         }
-        .navigationTitle(title)
-        .navigationSubtitle(subtitle)
-        .onAppear { observe() }
+        .navigationTitle(window.search.isActive ? "Search" : title)
+        .navigationSubtitle(window.search.isActive ? searchSubtitle : subtitle)
+        .searchable(text: Bindable(window.search).text, tokens: Bindable(window.search).tokens, placement: .toolbar, prompt: "Search mail") { token in
+            Text(token.label)
+        }
+        .searchSuggestions { searchSuggestions }
+        .searchFocused($searchFocused)
+        .onChange(of: window.isSearchFocused) {
+            if window.isSearchFocused {
+                searchFocused = true
+                window.isSearchFocused = false
+            }
+        }
+        .onAppear {
+            window.search.app = model
+            window.search.onResults = { [weak window] ids in
+                guard let window else { return }
+                if window.search.isActive {
+                    window.list.observeSearch(database: model.database, ids: ids)
+                } else {
+                    window.list.observe(database: model.database, mailbox: window.mailbox, category: window.category)
+                }
+            }
+            observe()
+        }
         .onChange(of: window.mailbox) { observe() }
         .onChange(of: window.category) { observe() }
         .onChange(of: window.focusedThread) {
@@ -69,7 +92,29 @@ struct ThreadListView: View {
     }
 
     private func observe() {
+        window.search.accountID = window.mailbox?.accountID
+        guard !window.search.isActive else { return }
         list.observe(database: model.database, mailbox: window.mailbox, category: window.category)
+    }
+
+    private var searchSubtitle: String {
+        if window.search.isSearchingServer {
+            return "Searching Gmail…"
+        }
+        if let error = window.search.serverError {
+            return error
+        }
+        return "\(list.threads.count) results"
+    }
+
+    @ViewBuilder
+    private var searchSuggestions: some View {
+        if !window.search.tokens.contains(.hasAttachment) {
+            Label("Has attachment", systemImage: "paperclip").searchCompletion(SearchToken.hasAttachment)
+        }
+        ForEach(window.search.suggestions, id: \.email) { contact in
+            Label("From \(contact.display)", systemImage: "person").searchCompletion(SearchToken.from(contact.email))
+        }
     }
 
     private func row(_ thread: ThreadSummary) -> some View {
@@ -98,7 +143,7 @@ struct ThreadListView: View {
     }
 
     private var showsCategoryBar: Bool {
-        guard window.mailbox?.kind == .inbox else { return false }
+        guard window.mailbox?.kind == .inbox, !window.search.isActive else { return false }
         if let accountID = window.mailbox?.accountID {
             return model.account(accountID)?.categoriesEnabled == true
         }

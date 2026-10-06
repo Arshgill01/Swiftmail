@@ -99,11 +99,13 @@ listed per milestone and tracked here until ticked.
 
 ## M7: Search
 
-- [ ] Query parser (`from:`, `to:`, `subject:`, `has:attachment`, `is:unread`, free text)
-- [ ] Local FTS search as you type; server search via `messages.list q=`
-- [ ] Merge results (local first), server-only threads fetched and openable
-- [ ] Perf test: 100,000-message synthetic DB under 100 ms
-- [h] Human: server-only results open normally
+- [x] Query parser (`from:`, `to:`, `subject:`, `has:attachment`, `is:unread`, `is:starred`, `label:`/`in:`, phrases, free text)
+- [x] Local FTS search as you type (60 ms debounce), injection-safe MATCH expressions with prefix matching
+- [x] Server search via `messages.list q=` with full Gmail syntax; server-only threads fetched as metadata and openable
+- [x] Merge results (local first, no duplicates); tokens and contact suggestions for `from:` and `has:attachment`
+- [x] `/` and ⌥⌘F focus search; Escape clears it; offline and signed-out states explained
+- [x] Perf test: 100,000-message synthetic DB answers under 100 ms
+- [h] Human: server-only results open normally with a real account
 
 ## M8: Notifications and polish
 

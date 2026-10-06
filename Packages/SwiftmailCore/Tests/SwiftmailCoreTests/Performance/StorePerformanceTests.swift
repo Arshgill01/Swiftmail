@@ -58,4 +58,18 @@ final class StorePerformanceTests: XCTestCase {
         XCTAssertNotNil(conversation)
         XCTAssertLessThan(Date().timeIntervalSince(start), 0.05, "opening a cached thread must read in under 50 ms")
     }
+
+    func testLocalSearchOn100kMessages() throws {
+        let db = try database()
+        let query = SearchQuery("quarterly report")
+        measure {
+            _ = try? db.reader.read { db in try LocalSearch.threads(db, query: query, accountID: nil, limit: 50) }
+        }
+        for text in ["invoice", "from:priya", "budget meeting", "rev"] {
+            let start = Date()
+            let results = try db.reader.read { db in try LocalSearch.threads(db, query: SearchQuery(text), accountID: nil, limit: 50) }
+            XCTAssertFalse(results.isEmpty, text)
+            XCTAssertLessThan(Date().timeIntervalSince(start), 0.1, "local search for \(text) must answer in under 100 ms")
+        }
+    }
 }
