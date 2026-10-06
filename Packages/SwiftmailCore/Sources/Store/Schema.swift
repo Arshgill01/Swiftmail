@@ -134,4 +134,16 @@ enum Schema {
         );
         """)
     }
+
+    /// First-sync progress, remote-content flag for bodies, draft IDs on messages.
+    static func v2(_ db: Database) throws {
+        try db.execute(sql: """
+        ALTER TABLE accounts ADD COLUMN initial_sync_done INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE accounts ADD COLUMN last_sync_at INTEGER;
+        ALTER TABLE message_bodies ADD COLUMN has_remote_content INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE message_bodies ADD COLUMN tracker_count INTEGER NOT NULL DEFAULT 0;
+        ALTER TABLE messages ADD COLUMN draft_id TEXT;
+        CREATE INDEX messages_draft ON messages(account_id, draft_id) WHERE draft_id IS NOT NULL;
+        """)
+    }
 }

@@ -19,7 +19,7 @@ disabled_rules:
 opt_in_rules:
   - force_unwrapping
 line_length:
-  warning: 140
+  warning: 160
   error: 200
   ignores_comments: true
   ignores_urls: true

@@ -11,6 +11,7 @@ public actor AccountManager {
     private let config: OAuthConfig?
     private let transport: HTTPTransport
     private let makeClient: SessionFactory
+    private let syncSettings: @Sendable () -> SyncSettings
     private var sessions: [String: AccountSession] = [:]
     private let logger = Logger(subsystem: "app.swiftmail", category: "Accounts")
 
@@ -19,8 +20,10 @@ public actor AccountManager {
         secrets: SecretStore,
         config: OAuthConfig?,
         transport: HTTPTransport,
-        makeClient: SessionFactory? = nil
+        makeClient: SessionFactory? = nil,
+        syncSettings: @escaping @Sendable () -> SyncSettings = { SyncSettings() }
     ) {
+        self.syncSettings = syncSettings
         self.database = database
         self.secrets = secrets
         self.config = config
@@ -92,7 +95,9 @@ public actor AccountManager {
 
     /// Revokes the token, deletes the Keychain item, the account's rows and its files.
     public func removeAccount(_ accountID: String) async throws {
-        sessions.removeValue(forKey: accountID)
+        if let session = sessions.removeValue(forKey: accountID) {
+            await session.stop()
+        }
         if let config, let token = try? secrets.load(account: accountID) {
             do {
                 try await OAuthClient(config: config, transport: transport).revoke(token: token)
@@ -122,6 +127,8 @@ public actor AccountManager {
                 try? await database.setAccountStatus(accountID, .needsSignIn)
             }
         }
-        return AccountSession(accountID: accountID, tokens: tokens, client: makeClient(accountID, tokens), database: database)
+        return AccountSession(
+            accountID: accountID, tokens: tokens, client: makeClient(accountID, tokens), database: database, settings: syncSettings
+        )
     }
 }

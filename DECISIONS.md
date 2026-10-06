@@ -55,3 +55,34 @@ access with `getProfile` before anything is saved, so a failed probe leaves no K
 script 401s, 429s, `Retry-After`, 5xx and batch responses without touching the network.
 Offline errors are not retried inside the client; callers keep the work queued until the
 network path monitor reports the connection is back.
+
+## D9. First sync also lists every unread inbox thread (M2)
+
+Step 4 adds `threads.list labelIds=INBOX,UNREAD` (metadata, up to 1,000) before drafts, so
+the local unread counts, the sidebar and the Dock badge are right from the first sync even
+when unread mail is older than the backfill window.
+
+## D10. Inbox and category unread counts are computed locally (M2)
+
+Inbox, category and unified counts come from the local store (`UNREAD` rows of
+`thread_labels` joined to `INBOX`), so they move instantly with optimistic actions and need
+no extra API calls. User labels, Spam and Drafts show Gmail's own counts from `labels.get`.
+
+## D11. Backfill runs in two exact phases (M2)
+
+Instead of guessing when the 90-day mark is crossed, the backfill lists
+`after:<boundary>` (bodies, `format=full`) and then `before:<boundary>` (`format=metadata`),
+with the phase, boundary and page token saved in `backfill_cursor`. Threads that became local
+while a page was in flight are not overwritten. Older pages beyond the window load on demand
+through `before:<oldest row>` when the list is scrolled to its end.
+
+## D12. Debug-only synthetic store for UI and launch checks (M2)
+
+`scripts/preview-db.sh` writes a 30,000-thread synthetic mailbox to `Preview.sqlite` in the
+app container using the test target's generator; debug builds open it with
+`--database Preview.sqlite`. No fixture data is in the app target, and the real `Mail.sqlite`
+is never touched.
+
+## D13. Line length 160 (M2)
+
+SQL inside Swift strings made 140 columns impractical; SwiftLint and SwiftFormat use 160.

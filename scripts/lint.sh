@@ -12,6 +12,7 @@ if [[ "${1:-}" == "--fix" ]]; then
   swiftlint lint --fix --quiet "${PATHS[@]}" >/dev/null || true
 fi
 
+swiftformat "${PATHS[@]}" --lint 2>&1 | grep -v "^Running\|^Reading\|^SwiftFormat completed" || true
 swiftformat "${PATHS[@]}" --lint --quiet
 swiftlint lint --strict --quiet "${PATHS[@]}"
 echo "lint passed"

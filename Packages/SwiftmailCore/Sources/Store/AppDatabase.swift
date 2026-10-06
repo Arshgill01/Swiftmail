@@ -14,9 +14,9 @@ public final class AppDatabase: Sendable {
         try Self.migrator.migrate(writer)
     }
 
-    /// Opens `Application Support/Swiftmail/Mail.sqlite`.
-    public static func openDefault() throws -> AppDatabase {
-        let url = try SwiftmailCore.appSupportDirectory().appendingPathComponent("Mail.sqlite")
+    /// Opens `Application Support/Swiftmail/Mail.sqlite` (or another file in that folder).
+    public static func openDefault(fileName: String = "Mail.sqlite") throws -> AppDatabase {
+        let url = try SwiftmailCore.appSupportDirectory().appendingPathComponent(fileName)
         return try AppDatabase(DatabasePool(path: url.path, configuration: makeConfiguration()))
     }
 
@@ -48,6 +48,7 @@ public final class AppDatabase: Sendable {
             migrator.eraseDatabaseOnSchemaChange = false
         #endif
         migrator.registerMigration("v1_schema", migrate: Schema.v1)
+        migrator.registerMigration("v2_sync_state", migrate: Schema.v2)
         return migrator
     }
 }

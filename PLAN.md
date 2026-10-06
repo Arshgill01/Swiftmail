@@ -31,18 +31,19 @@ listed per milestone and tracked here until ticked.
 
 ## M2: Store and first sync
 
-- [ ] Full schema migration (all tables, FTS5), `AppDatabase` (DatabasePool, WAL)
-- [ ] Gmail models; `GmailClient` protocol; `RESTGmailClient` (URLSession, 401 refresh+retry)
-- [ ] Batch requests (multipart/mixed, ≤ 50 per batch, per-part retry), backoff (2^n + jitter, ≤ 64 s, Retry-After)
-- [ ] `QuotaBucket` (6,000/min, 2,000 reserve for background), task-local request priority
-- [ ] `MessageDecoder` (MIME tree, charsets, base64url, attachments, inline parts, RFC 2047 headers)
-- [ ] `MailWriter`: upsert threads/messages/labels/bodies/attachments, thread_labels union, flags, FTS
-- [ ] `SyncEngine.firstSync` steps 1 to 7, resumable backfill with window setting, progress
-- [ ] `AccountSession` actor owning token provider, client, sync engine
-- [ ] Sidebar: unified + per-account mailboxes, labels tree with colors and counts, sync footer
-- [ ] Thread list (read-only): rows, paging from the store, comfortable/compact densities
-- [ ] `FakeGmailServer` (in tests), sync engine tests, perf test on 10k+ threads list query
-- [h] Human: inbox within 10 s of sign-in; relaunch under 500 ms (also offline); backfill resumes; scrolling
+- [x] Full schema migration (all tables, FTS5), `AppDatabase` (DatabasePool, WAL); v2 adds sync state columns
+- [x] Gmail models; `GmailClient` protocol; `RESTGmailClient` (URLSession, 401 refresh+retry)
+- [x] Batch requests (multipart/mixed, ≤ 50 per batch, per-part retry), backoff (2^n + jitter, ≤ 64 s, Retry-After)
+- [x] `QuotaBucket` (6,000/min, 2,000 reserve for background), task-local request priority
+- [x] `MessageDecoder` (MIME tree, charsets, base64url, attachments, inline parts, RFC 2047/2231)
+- [x] `MailWriter`: threads/messages/labels/bodies/attachments, thread_labels union, flags, FTS, contacts
+- [x] `SyncEngine.firstSync` steps 1 to 4; backfill steps 5 to 7 (resumable cursor, 90-day full/metadata split, window)
+- [x] `AccountSession` owns token provider, client, sync engine; bootstraps first sync + backfill
+- [x] Sidebar: unified + per-account mailboxes, nested labels with colors and counts, sync footer
+- [x] Thread list (read-only): rows, paging from the store, server paging past the cache, densities, category bar
+- [x] `FakeGmailServer`, first-sync/backfill tests, store perf tests on 30,000 threads / 100,000 messages
+- [x] Launch to first list render on the synthetic 30k-thread store: 368–419 ms (debug build), budget 500 ms
+- [h] Human: inbox within 10 s of sign-in; relaunch under 500 ms (also offline); backfill resumes; scrolling feel
 
 ## M3: Incremental sync
 

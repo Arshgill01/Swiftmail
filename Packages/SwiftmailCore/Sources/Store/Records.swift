@@ -33,6 +33,8 @@ public struct AccountRecord: SnakeCaseRecord, Sendable, Equatable, Identifiable,
     public var categoriesEnabled: Bool = true
     public var sortOrder: Int = 0
     public var addedAt: Int64
+    public var initialSyncDone: Bool = false
+    public var lastSyncAt: Int64?
 
     public init(id: String, email: String, displayName: String? = nil, avatarUrl: String? = nil, sortOrder: Int = 0, addedAt: Int64) {
         self.id = id
@@ -110,10 +112,7 @@ public struct MessageRecord: SnakeCaseRecord, Sendable, Equatable {
     public var isUnread: Bool = false
     public var isDraft: Bool = false
     public var bodyState: BodyState = .none
-
-    public mutating func didInsert(_ inserted: InsertionSuccess) {
-        rowid = inserted.rowID
-    }
+    public var draftId: String?
 }
 
 public struct MessageBodyRecord: SnakeCaseRecord, Sendable, Equatable {
@@ -125,6 +124,8 @@ public struct MessageBodyRecord: SnakeCaseRecord, Sendable, Equatable {
     public var displayHtml: String?
     public var bodyText: String?
     public var fetchedAt: Int64
+    public var hasRemoteContent: Bool = false
+    public var trackerCount: Int = 0
 }
 
 public struct AttachmentRecord: SnakeCaseRecord, Sendable, Equatable, Hashable {
@@ -177,10 +178,6 @@ public struct PendingActionRecord: SnakeCaseRecord, Sendable, Equatable, Identif
     public var attempts: Int = 0
     public var lastError: String?
     public var createdAt: Int64
-
-    public mutating func didInsert(_ inserted: InsertionSuccess) {
-        id = inserted.rowID
-    }
 }
 
 public extension Date {
