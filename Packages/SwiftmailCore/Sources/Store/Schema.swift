@@ -157,4 +157,17 @@ enum Schema {
         ALTER TABLE accounts ADD COLUMN labels_refreshed_at INTEGER;
         """)
     }
+
+    /// Compose windows saved from the first keystroke, so a crash never loses text.
+    static func v4(_ db: Database) throws {
+        try db.execute(sql: """
+        CREATE TABLE local_drafts (
+          id TEXT PRIMARY KEY,
+          account_id TEXT NOT NULL,
+          state TEXT NOT NULL,
+          is_open INTEGER NOT NULL DEFAULT 1,
+          updated_at INTEGER NOT NULL
+        );
+        """)
+    }
 }

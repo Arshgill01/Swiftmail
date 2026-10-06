@@ -50,6 +50,7 @@ public final class AppDatabase: Sendable {
         migrator.registerMigration("v1_schema", migrate: Schema.v1)
         migrator.registerMigration("v2_sync_state", migrate: Schema.v2)
         migrator.registerMigration("v3_resync", migrate: Schema.v3)
+        migrator.registerMigration("v4_local_drafts", migrate: Schema.v4)
         return migrator
     }
 }

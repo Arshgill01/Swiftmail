@@ -67,6 +67,33 @@ public enum HTMLSanitizer {
         }
     }
 
+    /// The original message cleaned for quoting in a reply or forward: active content,
+    /// handlers and remote images removed, no reader wrapper. Plain text is escaped.
+    public static func quotable(html: String?, plain: String?) -> String {
+        guard let html, !html.isEmpty, let document = try? SwiftSoup.parse(html) else {
+            let text = ReaderDocument.escapeText(plain ?? "")
+            return "<div dir=\"ltr\">" + text.replacingOccurrences(of: "\n", with: "<br>") + "</div>"
+        }
+        do {
+            for name in removedElements + ["style"] {
+                try document.select(name).remove()
+            }
+            for element in try document.getAllElements().array() {
+                try cleanAttributes(element)
+            }
+            // Remote images would load (and track) inside the editor.
+            for image in try document.select("img").array() {
+                let src = try image.attr("src").lowercased()
+                if src.hasPrefix("http") || src.hasPrefix("//") {
+                    try image.remove()
+                }
+            }
+            return try document.body()?.html() ?? ""
+        } catch {
+            return ReaderDocument.escapeText(plain ?? "")
+        }
+    }
+
     // MARK: Attributes
 
     static func cleanAttributes(_ element: Element) throws {

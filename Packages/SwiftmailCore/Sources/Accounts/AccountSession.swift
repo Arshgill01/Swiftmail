@@ -40,6 +40,15 @@ public actor AccountSession {
         actions = ActionQueue(accountID: accountID, client: client, database: database)
     }
 
+    /// Hooks the outbox into the queue, then triggers a sync once a send lands.
+    public func configureSending() async {
+        let client = client
+        let database = database
+        await actions.setSendHandler { row in
+            try await Outbox.send(row, client: client, database: database)
+        }
+    }
+
     public func setSink(_ sink: SyncEventSink) async {
         await sync.setSink(sink)
     }
@@ -54,6 +63,7 @@ public actor AccountSession {
         guard loopTask == nil else { return }
         let actions = actions
         Task {
+            await configureSending()
             try? await actions.recover()
             await actions.drain()
         }

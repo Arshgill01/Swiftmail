@@ -59,7 +59,8 @@ public enum EMLParser {
         for rawLine in text.components(separatedBy: "\n") {
             let line = rawLine.hasSuffix("\r") ? String(rawLine.dropLast()) : rawLine
             if line.first == " " || line.first == "\t", let last = headers.popLast() {
-                headers.append(GmailHeader(name: last.name, value: last.value + " " + line.trimmingCharacters(in: .whitespaces)))
+                let continuation = line.trimmingCharacters(in: .whitespaces)
+                headers.append(GmailHeader(name: last.name, value: last.value.isEmpty ? continuation : last.value + " " + continuation))
             } else if let colon = line.firstIndex(of: ":") {
                 let name = String(line[..<colon]).trimmingCharacters(in: .whitespaces)
                 let value = String(line[line.index(after: colon)...]).trimmingCharacters(in: .whitespaces)
