@@ -62,13 +62,17 @@ struct SidebarView: View {
             }
         )) {
             MailboxRow(title: "Inbox", systemImage: "tray", count: item.inboxUnread).tag(mailbox(.inbox))
+                .threadDrop { model.perform(.moveToInbox, threads: $0) }
             MailboxRow(title: "Starred", systemImage: "star").tag(mailbox(.starred))
+                .threadDrop { model.perform(.star, threads: $0) }
             MailboxRow(title: "Important", systemImage: "tag").tag(mailbox(.important))
             MailboxRow(title: "Sent", systemImage: "paperplane").tag(mailbox(.sent))
             MailboxRow(title: "Drafts", systemImage: "doc", count: item.systemCounts["DRAFT"] ?? 0).tag(mailbox(.drafts))
             MailboxRow(title: "All Mail", systemImage: "archivebox").tag(mailbox(.allMail))
             MailboxRow(title: "Spam", systemImage: "xmark.octagon", count: item.systemCounts["SPAM"] ?? 0).tag(mailbox(.spam))
+                .threadDrop { model.perform(.spam, threads: $0) }
             MailboxRow(title: "Trash", systemImage: "trash").tag(mailbox(.trash))
+                .threadDrop { model.perform(.trash, threads: $0) }
             LabelTreeRows(accountID: id, nodes: LabelNode.build(item.userLabels))
         } header: {
             HStack(spacing: 6) {
@@ -134,5 +138,17 @@ struct SyncFooter: View {
             return "Updated just now"
         }
         return "Updated \(last.formatted(.relative(presentation: .named)))"
+    }
+}
+
+extension View {
+    /// Accepts threads dragged from the list.
+    func threadDrop(_ perform: @escaping ([ThreadSummary.ID]) -> Void) -> some View {
+        dropDestination(for: String.self) { items, _ in
+            let ids = ThreadDrag.decode(items)
+            guard !ids.isEmpty else { return false }
+            perform(ids)
+            return true
+        }
     }
 }

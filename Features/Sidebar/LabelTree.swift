@@ -49,6 +49,7 @@ struct LabelNode: Identifiable, Hashable {
 }
 
 struct LabelTreeRows: View {
+    @Environment(AppModel.self) private var model
     let accountID: String
     let nodes: [LabelNode]
 
@@ -76,6 +77,15 @@ struct LabelTreeRows: View {
                 count: label.threadsUnread
             )
             .tag(Mailbox(accountID: accountID, kind: .label(label.id)))
+            // Drop applies the label; with Option held it moves (removes Inbox).
+            .threadDrop { ids in
+                let own = ids.filter { $0.accountID == accountID }
+                if NSEvent.modifierFlags.contains(.option) {
+                    model.perform(.move(to: label.id, from: "INBOX"), threads: own)
+                } else {
+                    model.perform(.addLabels([label.id]), threads: own)
+                }
+            }
         } else {
             Label(node.title, systemImage: "folder")
         }

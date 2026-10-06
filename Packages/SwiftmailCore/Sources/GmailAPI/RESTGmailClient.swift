@@ -44,7 +44,8 @@ public final class RESTGmailClient: GmailClient {
     func accessToken(rejected: String? = nil) async throws -> String {
         do {
             return try await tokens.accessToken(rejected: rejected)
-        } catch AuthError.needsSignIn {
+        } catch is AuthError {
+            // Any credential problem waits for the user to sign in; queued work is kept.
             throw GmailError.needsSignIn
         } catch let error as URLError {
             throw GmailError.from(urlError: error)

@@ -73,14 +73,17 @@ listed per milestone and tracked here until ticked.
 
 ## M5: Actions, offline queue and undo
 
-- [ ] `MailActions` optimistic local changes + `pending_actions` in one transaction
-- [ ] `ActionQueue`: drain, threads.modify / batchModify / trash, retries, offline hold, rollback
-- [ ] Merge rule: pending changes re-applied over incoming history
-- [ ] Undo: queued → delete + restore; sent → inverse action; toast 8 s; Cmd-Z and `z`
-- [ ] `CommandRouter` + all single-key shortcuts, menus, toolbar, `?` help sheet
-- [ ] Multi-select, bulk actions, drag to label (Option = move), label/move pickers
-- [ ] Tests: actions, undo, rollback, offline, shortcut routing
-- [h] Human: offline actions apply after reconnect; undo reverses server state
+- [x] `MailActions` optimistic local changes + `pending_actions` in one transaction (star/unread on the newest message)
+- [x] `ActionQueue`: drain in order, threads.modify (≤ 5) / batchModify / trash / untrash, backoff retries, offline hold, rollback with a message
+- [x] Merge rule: pending changes re-applied over incoming history (`PendingOverlay`)
+- [x] Undo: queued → delete + restore; sent → inverse action; 8 s toast; Cmd-Z and `z`
+- [x] `CommandRouter` + all single-key shortcuts (local key monitor, never in text fields), menus, toolbar, `?` sheet
+- [x] Multi-select (shift/cmd click, `x` with a cursor), hover actions, drag to label (Option = move), drop on Inbox/Starred/Spam/Trash
+- [x] Label picker (`l`), move picker (`v`), go to label (`g l`); selection moves to the thread below after removal
+- [x] Opening an unread thread marks it read
+- [x] Trashed and spam messages no longer keep a thread in other views
+- [x] Tests: actions, batching, offline, undo before/after send, rollback (transient and permanent), overlay, shortcut routing
+- [h] Human: offline actions apply after reconnect; undo reverses server state; feel of shortcuts and hover actions
 
 ## M6: Compose
 

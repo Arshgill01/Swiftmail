@@ -101,3 +101,16 @@ SQL inside Swift strings made 140 columns impractical; SwiftLint and SwiftFormat
 - Debug builds take `--snapshot <name.png> [--select n] [--appearance dark|light]` to render the
   window (webviews included) into the container's tmp folder, for visual review without screen
   recording permission.
+
+## D15. Action details (M5)
+
+- Star and mark-unread touch only the newest non-draft message, as Gmail web does; the other
+  actions are thread-wide (`threads.modify` for up to 5 threads, `messages.batchModify` above).
+- Trash is applied locally as add `TRASH` / remove `INBOX`; thread labels now come only from
+  messages outside Trash and Spam, so trashed mail leaves Inbox, Starred and label views.
+- Sent actions stay in `pending_actions` as `done` for 10 minutes so undo can queue the
+  inverse; `done` is an extra state beyond the spec's list.
+- Any credential error holds the queue (rows stay `queued`, attempts unchanged) until the
+  account signs in again, instead of counting as failures.
+- Single-key shortcuts are read by an `NSEvent` local monitor on main windows; it ignores
+  text views, text fields and token fields, and swallows the `g` of a go sequence.

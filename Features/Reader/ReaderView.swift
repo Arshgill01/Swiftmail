@@ -4,7 +4,9 @@ import SwiftUI
 struct ReaderView: View {
     @Environment(AppModel.self) private var model
     let window: MainWindowModel
-    @State private var reader = ReaderModel()
+    private var reader: ReaderModel {
+        window.reader
+    }
 
     var body: some View {
         Group {
@@ -26,25 +28,38 @@ struct ReaderView: View {
     }
 
     private func conversationView(_ conversation: Conversation) -> some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 10) {
-                ConversationHeader(conversation: conversation)
-                if let error = reader.bodyError {
-                    HStack {
-                        Label(error, systemImage: "wifi.exclamationmark").foregroundStyle(.secondary)
-                        Button("Try Again") { reader.retry(model: model) }
+        ScrollViewReader { proxy in
+            ScrollView {
+                VStack(alignment: .leading, spacing: 10) {
+                    ConversationHeader(conversation: conversation)
+                    if let error = reader.bodyError {
+                        HStack {
+                            Label(error, systemImage: "wifi.exclamationmark").foregroundStyle(.secondary)
+                            Button("Try Again") { reader.retry(model: model) }
+                        }
+                        .font(.callout)
                     }
-                    .font(.callout)
+                    ForEach(conversation.messages) { message in
+                        MessageCard(message: message, accountID: conversation.thread.accountId)
+                            .id(message.id)
+                            .overlay {
+                                if reader.focusedMessage == message.id {
+                                    RoundedRectangle(cornerRadius: 10).strokeBorder(Color.accentColor.opacity(0.6), lineWidth: 1.5)
+                                }
+                            }
+                    }
+                    ConversationFooter()
                 }
-                ForEach(conversation.messages) { message in
-                    MessageCard(message: message, accountID: conversation.thread.accountId)
-                }
-                ConversationFooter()
+                .padding(.horizontal, 20)
+                .padding(.vertical, 16)
+                .frame(maxWidth: 880)
+                .frame(maxWidth: .infinity)
             }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 16)
-            .frame(maxWidth: 880)
-            .frame(maxWidth: .infinity)
+            .onChange(of: reader.focusedMessage) {
+                if let id = reader.focusedMessage {
+                    withAnimation(.easeOut(duration: 0.15)) { proxy.scrollTo(id, anchor: .top) }
+                }
+            }
         }
         .overlay(alignment: .bottomLeading) {
             if let link = reader.hoveredLink {

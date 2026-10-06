@@ -18,6 +18,7 @@ struct SwiftmailApp: App {
                 .environment(model)
         }
         .defaultSize(width: 1200, height: 760)
+        .commands { MailCommands(app: model) }
 
         Settings {
             SettingsView()

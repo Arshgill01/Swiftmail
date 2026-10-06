@@ -4,7 +4,10 @@ import SwiftUI
 struct ThreadListView: View {
     @Environment(AppModel.self) private var model
     @Bindable var window: MainWindowModel
-    @State private var list = ThreadListModel()
+    private var list: ThreadListModel {
+        window.list
+    }
+
     @AppStorage(Preferences.listDensity) private var densityRaw = ListDensity.comfortable.rawValue
 
     var body: some View {
@@ -18,6 +21,7 @@ struct ThreadListView: View {
                 ForEach(list.threads) { thread in
                     row(thread)
                         .tag(thread.id)
+                        .draggable(ThreadDrag.payload(for: thread.id, selection: window.selectedThreads))
                         .onAppear {
                             list.rowAppeared(thread.id) { await model.session(for: $0) }
                         }
@@ -42,12 +46,17 @@ struct ThreadListView: View {
         .onAppear { observe() }
         .onChange(of: window.mailbox) { observe() }
         .onChange(of: window.category) { observe() }
-        #if DEBUG
-            .onReceive(NotificationCenter.default.publisher(for: DebugSnapshot.selectNotification)) { note in
-                if let index = note.object as? Int, list.threads.indices.contains(index) {
-                    window.selectedThreads = [list.threads[index].id]
-                }
+        .onChange(of: window.focusedThread) {
+            if let id = window.focusedThread, let thread = list.threads.first(where: { $0.id == id }) {
+                model.markReadOnOpen(thread)
             }
+        }
+        #if DEBUG
+        .onReceive(NotificationCenter.default.publisher(for: DebugSnapshot.selectNotification)) { note in
+            if let index = note.object as? Int, list.threads.indices.contains(index) {
+                window.selectedThreads = [list.threads[index].id]
+            }
+        }
         #endif
     }
 
@@ -63,7 +72,11 @@ struct ThreadListView: View {
             density: ListDensity(rawValue: densityRaw) ?? .comfortable,
             ownAddresses: account?.ownAddresses ?? [],
             labels: account?.allLabels ?? [:],
-            accountColor: unified ? AccountColors.color(model.accountColorIndex(thread.accountID)) : nil
+            accountColor: unified ? AccountColors.color(model.accountColorIndex(thread.accountID)) : nil,
+            isCursor: window.selectedThreads.count > 1 && window.cursor == thread.id,
+            onAction: { action in
+                window.selectedThreads.contains(thread.id) ? window.apply(action) : model.perform(action, threads: [thread.id])
+            }
         )
     }
 

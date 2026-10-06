@@ -18,6 +18,8 @@ final class ReaderModel {
     var expanded: Set<String> = []
     var allowedThisSession: Set<String> = []
     var hoveredLink: String?
+    /// The message n/p move between; the view scrolls to it.
+    var focusedMessage: String?
     private(set) var bodyError: String?
     private(set) var isFetching = false
 
@@ -36,6 +38,7 @@ final class ReaderModel {
         observation?.cancel()
         snapshot = nil
         expanded = []
+        focusedMessage = nil
         allowedThisSession = []
         bodyError = nil
         lastMessageIDs = []
@@ -114,6 +117,17 @@ final class ReaderModel {
 
     func expandAll() {
         expanded = Set(conversation?.messages.map(\.id) ?? [])
+    }
+
+    func moveFocus(by offset: Int) {
+        guard let ids = conversation?.messages.map(\.id), !ids.isEmpty else { return }
+        let current = focusedMessage.flatMap { ids.firstIndex(of: $0) } ?? (ids.count - 1)
+        focusedMessage = ids[min(max(current + offset, 0), ids.count - 1)]
+    }
+
+    func expandFocused() {
+        guard let id = focusedMessage ?? conversation?.messages.last?.id else { return }
+        expanded.insert(id)
     }
 
     func allowsRemote(_ message: ConversationMessage, globally: Bool) -> Bool {

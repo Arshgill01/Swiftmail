@@ -7,6 +7,9 @@ struct ThreadRow: View {
     let ownAddresses: Set<String>
     let labels: [String: LabelRecord]
     let accountColor: Color?
+    var isCursor = false
+    var onAction: (MailAction) -> Void = { _ in }
+    @State private var isHovered = false
 
     var body: some View {
         HStack(spacing: 0) {
@@ -28,6 +31,17 @@ struct ThreadRow: View {
             }
         }
         .frame(height: density == .comfortable ? 64 : 24)
+        .overlay(alignment: .leading) {
+            if isCursor {
+                Rectangle().fill(Color.accentColor).frame(width: 2).offset(x: -8)
+            }
+        }
+        .overlay(alignment: density == .comfortable ? .topTrailing : .trailing) {
+            if isHovered {
+                HoverActions(isUnread: thread.isUnread, onAction: onAction)
+            }
+        }
+        .onHover { isHovered = $0 }
         .contentShape(Rectangle())
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(accessibilityText)
@@ -167,6 +181,36 @@ struct ThreadRow: View {
         }
         parts.append(ThreadDateFormatter.string(thread.lastDate))
         return parts.joined(separator: ". ")
+    }
+}
+
+/// Archive, trash and read/unread on hover, over the date, as in Spark.
+struct HoverActions: View {
+    let isUnread: Bool
+    let onAction: (MailAction) -> Void
+
+    var body: some View {
+        HStack(spacing: 2) {
+            button("archivebox", "Archive", .archive)
+            button("trash", "Move to Trash", .trash)
+            button(isUnread ? "envelope.open" : "envelope.badge", isUnread ? "Mark as read" : "Mark as unread", isUnread ? .markRead : .markUnread)
+        }
+        .padding(2)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 6))
+    }
+
+    private func button(_ symbol: String, _ label: String, _ action: MailAction) -> some View {
+        Button {
+            onAction(action)
+        } label: {
+            Image(systemName: symbol)
+                .font(.system(size: 11))
+                .frame(width: 22, height: 18)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.borderless)
+        .help(label)
+        .accessibilityLabel(label)
     }
 }
 

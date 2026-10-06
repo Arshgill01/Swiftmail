@@ -74,6 +74,11 @@ public struct CommandRouter: Sendable {
 
     public init() {}
 
+    /// True after "g", while the second key of a go sequence is expected.
+    public var isAwaitingGo: Bool {
+        pendingGo != nil
+    }
+
     public static let singleKeys: [String: MailCommand] = [
         "c": .compose, "r": .reply, "a": .replyAll, "f": .forward,
         "e": .archive, "y": .archive, "#": .trash, "!": .spam, "s": .toggleStar,

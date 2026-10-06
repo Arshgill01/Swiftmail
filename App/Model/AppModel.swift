@@ -20,6 +20,8 @@ final class AppModel {
     @ObservationIgnored private var startedSessions: Set<String> = []
     @ObservationIgnored let triggers: SyncTriggers
     @ObservationIgnored let readerServices: ReaderServices
+    let undo = UndoCenter()
+    @ObservationIgnored let keyboard = KeyboardShortcuts()
     @ObservationIgnored let logger = Logger(subsystem: "app.swiftmail", category: "App")
 
     init(database: AppDatabase, accountManager: AccountManager) {
@@ -74,6 +76,7 @@ final class AppModel {
         observeSidebar()
         triggers.start()
         readerServices.prewarm()
+        keyboard.install()
         Task {
             do {
                 for session in try await accountManager.restoreSessions() {
@@ -130,6 +133,7 @@ final class AppModel {
             Task { @MainActor [weak self] in self?.syncStatus[id] = status }
         })
         await session.setSink(sink)
+        await configureActions(session)
         await session.start()
     }
 

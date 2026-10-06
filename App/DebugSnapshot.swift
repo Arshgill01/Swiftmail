@@ -1,5 +1,6 @@
 #if DEBUG
     import AppKit
+    import SwiftmailCore
     import WebKit
 
     /// Debug builds only: `--snapshot <name.png in the container tmp folder> [--select <n>] [--appearance dark|light]` renders
@@ -24,6 +25,17 @@
                 if let index = argument("--select").flatMap(Int.init) {
                     NotificationCenter.default.post(name: selectNotification, object: index)
                     try? await Task.sleep(for: .seconds(3))
+                }
+                // `--commands archive,nextThread` runs commands on the window, as shortcuts would.
+                if let commands = argument("--commands"), let window = NSApp.windows.first(where: \.isVisible),
+                   let model = WindowRegistry.model(for: window) {
+                    for name in commands.split(separator: ",") {
+                        if let command = MailCommand(rawValue: String(name)) {
+                            model.perform(command)
+                        }
+                        try? await Task.sleep(for: .milliseconds(400))
+                    }
+                    try? await Task.sleep(for: .seconds(1))
                 }
                 if let window = NSApp.windows.first(where: { $0.isVisible && $0.contentView != nil }) {
                     window.setContentSize(NSSize(width: 1400, height: 900))
