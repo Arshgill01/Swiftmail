@@ -34,3 +34,24 @@ account access.
 The spec's `CommandRouter` is pure key-to-command mapping logic, so it lives in
 `SwiftmailCore/Sources/Commands` where it is unit tested without UI. The app owns the
 `NSEvent` monitor that feeds it.
+
+## D6. Keychain: data protection keychain with a login-keychain fallback (M1)
+
+`KeychainStore` tries the data protection keychain first (where
+`kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly` applies). Without a provisioning profile
+the app has no keychain access group, so that returns `errSecMissingEntitlement` and the
+store falls back to the login keychain, whose items are still limited to this app's signed
+identity. Verified in the sandbox with `Swiftmail --keychain-selftest` (debug builds only).
+
+## D7. `Accounts` folder for `AccountManager` and `AccountSession` (M1)
+
+The per-account session actor and the manager that signs accounts in and out don't belong to
+any single spec module, so they live in `Sources/Accounts`. Sign-in step 6 confirms Gmail
+access with `getProfile` before anything is saved, so a failed probe leaves no Keychain item.
+
+## D8. HTTP seam is `HTTPTransport`, not `URLProtocol` (M1)
+
+`RESTGmailClient` and `OAuthClient` take an `HTTPTransport`. Tests use `StubTransport` to
+script 401s, 429s, `Retry-After`, 5xx and batch responses without touching the network.
+Offline errors are not retried inside the client; callers keep the work queued until the
+network path monitor reports the connection is back.

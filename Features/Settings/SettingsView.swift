@@ -7,7 +7,7 @@ struct SettingsView: View {
                 Form { Text("General settings") }.formStyle(.grouped)
             }
             Tab("Accounts", systemImage: "at") {
-                Form { Text("Accounts") }.formStyle(.grouped)
+                AccountsSettingsView()
             }
         }
         .frame(width: 560, height: 420)

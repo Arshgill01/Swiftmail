@@ -16,17 +16,18 @@ listed per milestone and tracked here until ticked.
 
 ## M1: Sign-in
 
-- [ ] base64url helper, PKCE (verifier, S256 challenge), random state
-- [ ] `LoopbackServer` (NWListener on 127.0.0.1, OS port, one shot, 5 min timeout, success page)
-- [ ] `OAuthClient`: auth URL, code exchange, refresh, revoke; `invalid_grant` mapping
-- [ ] ID token decoding (`sub`, email, name, picture)
-- [ ] `KeychainStore` (service `app.swiftmail.oauth`, account `<sub>`) behind a `SecretStore` protocol
-- [ ] `TokenProvider` actor: refresh 60 s before expiry, shared in-flight refresh, forced refresh
-- [ ] `SignInFlow`: steps 1 to 8, `getProfile` check, update existing account instead of duplicating
-- [ ] Minimal `accounts` table + `AccountStore`; add and remove account (revoke, Keychain, rows, files)
-- [ ] Sidebar account rows; Settings > Accounts add/remove; "needs sign-in" banner
-- [ ] Tests: PKCE vectors, auth URL, loopback request parsing, token provider refresh sharing, invalid_grant
-- [h] Human: sign in with two accounts; relaunch stays signed in; remove account revokes
+- [x] base64url helper, PKCE (verifier, S256 challenge), random state
+- [x] `LoopbackServer` (NWListener on 127.0.0.1, OS port, one shot, 5 min timeout, success page)
+- [x] `OAuthClient`: auth URL, code exchange, refresh, revoke; `invalid_grant` mapping
+- [x] ID token decoding (`sub`, email, name, picture)
+- [x] `KeychainStore` (service `app.swiftmail.oauth`, account `<sub>`) behind a `SecretStore` protocol
+- [x] `TokenProvider` actor: refresh 60 s before expiry, shared in-flight refresh, forced refresh
+- [x] `SignInFlow`: steps 1 to 8, `getProfile` check, update existing account instead of duplicating
+- [x] Minimal `accounts` table + `AccountStore`; add and remove account (revoke, Keychain, rows, files)
+- [x] Sidebar account rows; Settings > Accounts add/remove; "needs sign-in" banner
+- [x] Tests: PKCE vectors, auth URL, loopback request parsing, token provider refresh sharing, invalid_grant
+- [x] Keychain verified inside the sandbox (`Swiftmail --keychain-selftest`, debug builds)
+- [h] Human: create the Google Cloud client (README), sign in with two accounts; relaunch stays signed in; remove account revokes
 
 ## M2: Store and first sync
 

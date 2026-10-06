@@ -15,6 +15,7 @@ disabled_rules:
   - for_where
   - void_function_in_ternary
   - statement_position
+  - optional_data_string_conversion
 opt_in_rules:
   - force_unwrapping
 line_length:
