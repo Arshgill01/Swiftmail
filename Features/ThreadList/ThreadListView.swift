@@ -9,6 +9,7 @@ struct ThreadListView: View {
 
     var body: some View {
         VStack(spacing: 0) {
+            NeedsSignInBanner()
             if showsCategoryBar {
                 CategoryBar(selection: $window.category, counts: categoryCounts)
                 Divider()
@@ -41,6 +42,13 @@ struct ThreadListView: View {
         .onAppear { observe() }
         .onChange(of: window.mailbox) { observe() }
         .onChange(of: window.category) { observe() }
+        #if DEBUG
+            .onReceive(NotificationCenter.default.publisher(for: DebugSnapshot.selectNotification)) { note in
+                if let index = note.object as? Int, list.threads.indices.contains(index) {
+                    window.selectedThreads = [list.threads[index].id]
+                }
+            }
+        #endif
     }
 
     private func observe() {

@@ -139,6 +139,21 @@ enum SyntheticDatabase {
     }
 }
 
+extension SyntheticDatabase {
+    /// Fills `display_html` for synthetic plain bodies (slow; preview database only).
+    static func renderPlainBodies(_ database: AppDatabase) throws {
+        try database.writer.write { db in
+            let rows = try Row.fetchAll(db, sql: "SELECT account_id, message_id, plain FROM message_bodies WHERE display_html IS NULL")
+            let update = try db.makeStatement(sql: "UPDATE message_bodies SET display_html = ? WHERE account_id = ? AND message_id = ?")
+            for row in rows {
+                let plain: String = row["plain"] ?? ""
+                let html = ReaderDocument.wrap(head: "", body: ReaderDocument.escapeText(plain), bodyClass: "sm-simple sm-plain", wrapperStyle: nil)
+                try update.execute(arguments: [html, row["account_id"], row["message_id"]])
+            }
+        }
+    }
+}
+
 enum GRDBPool {
     static func open(_ path: String) throws -> DatabasePool {
         try DatabasePool(path: path, configuration: AppDatabase.makeConfiguration())

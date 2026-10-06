@@ -8,6 +8,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             if CommandLine.arguments.contains("--keychain-selftest") {
                 runKeychainSelfTest()
             }
+            DebugSnapshot.runIfRequested()
         #endif
     }
 

@@ -12,7 +12,8 @@ struct NeedsSignInBanner: View {
                 Image(systemName: "exclamationmark.triangle.fill")
                     .foregroundStyle(.orange)
                 Text(message(for: accounts))
-                    .lineLimit(1)
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
                 Spacer()
                 Button("Sign In") { model.addAccount() }
                     .disabled(model.isSigningIn)
@@ -26,7 +27,7 @@ struct NeedsSignInBanner: View {
 
     private func message(for accounts: [AccountRecord]) -> String {
         if accounts.count == 1, let account = accounts.first {
-            return "\(account.email) needs to sign in again. Cached mail stays available."
+            return "\(account.email) needs to sign in again."
         }
         return "\(accounts.count) accounts need to sign in again."
     }

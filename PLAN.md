@@ -57,15 +57,18 @@ listed per milestone and tracked here until ticked.
 
 ## M4: Reader
 
-- [ ] Sanitizer (SwiftSoup): removals, on* attrs, js URLs, CSP, cid rewrite, tracker detection
-- [ ] Plain text rendering (links, format=flowed), quoted-text collapse (Gmail, Apple, Outlook, plain)
-- [ ] Dark mode: simple vs paper card
-- [ ] WKWebView pool + pre-warm, JS off, separate content world height script, non-persistent store
-- [ ] `swiftmail-cid` scheme handler; content rule lists for remote blocking; link policy
-- [ ] Remote images banner, allow once / always (sender or domain), global setting
-- [ ] Conversation view: cards, collapse/expand, expand all, header, labels, star
-- [ ] Attachments: chips, download on demand, Quick Look, save, drag to Finder
-- [ ] Test corpus (~30 synthetic .eml) + EML parser; render tests for every corpus file
+- [x] Sanitizer (SwiftSoup): removals, on* attrs, js/vbscript/data URLs, CSS expressions, CSP, cid rewrite, tracker removal
+- [x] Plain text rendering (links, format=flowed), quoted-text collapse (Gmail, Apple, Outlook, Yahoo, plain) via JS-free `<details>`
+- [x] Dark mode: simple mail follows the system; colored mail on a white paper card
+- [x] WKWebView pool + pre-warm, JS off, separate content world measuring script, non-persistent store
+- [x] `swiftmail-cid` scheme handler; content rule list blocks http(s); links open outside; link hover bubble
+- [x] Remote images banner, load once / always for sender or domain, global setting key
+- [x] Conversation view: cards, collapse/expand, newest + unread expanded, header, labels, star display
+- [x] Attachments: chips, download on demand, Quick Look, open, save, drag to Finder
+- [x] Wide fixed-width mail scales down to fit the card
+- [x] Test corpus (32 synthetic .eml) + EML parser; every file renders safely; WebKit test proves no remote loads and no page JS
+- [x] Cached thread read under 50 ms on the 30k-thread store (perf test)
+- [x] Debug-only `--snapshot` captures the window for visual checks (reviewed light and dark: newsletter, flowed text, Outlook reply, inline images)
 - [h] Human: look and feel of real mail
 
 ## M5: Actions, offline queue and undo

@@ -14,23 +14,8 @@ struct MainWindow: View {
             ThreadListView(window: window)
                 .navigationSplitViewColumnWidth(min: 300, ideal: 380, max: 640)
         } detail: {
-            ReaderPlaceholder(window: window)
+            ReaderView(window: window)
                 .frame(minWidth: 480)
-        }
-        .safeAreaInset(edge: .top, spacing: 0) {
-            NeedsSignInBanner()
-        }
-    }
-}
-
-struct ReaderPlaceholder: View {
-    let window: MainWindowModel
-
-    var body: some View {
-        if window.selectedThreads.count > 1 {
-            ContentUnavailableView("\(window.selectedThreads.count) conversations selected", systemImage: "envelope.badge")
-        } else {
-            ContentUnavailableView("No Conversation Selected", systemImage: "envelope")
         }
     }
 }

@@ -45,7 +45,7 @@ enum ReaderDocument {
     :root{color-scheme:light dark}
     html,body{margin:0;padding:0;background:transparent}
     body{font:14px -apple-system,BlinkMacSystemFont,system-ui,sans-serif;line-height:1.45;overflow-wrap:anywhere;-webkit-text-size-adjust:none}
-    .sm-content{max-width:760px;margin:0 auto}
+    .sm-content{max-width:760px;margin:0 auto;display:flow-root}
     body.sm-simple{color:#1d1d1f}
     body.sm-plain .sm-content{white-space:pre-wrap;font-family:-apple-system,system-ui,sans-serif}
     img{max-width:100%;height:auto}

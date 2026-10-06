@@ -50,4 +50,12 @@ final class StorePerformanceTests: XCTestCase {
         XCTAssertGreaterThan(snapshot.unifiedInboxUnread, 0)
         XCTAssertLessThan(Date().timeIntervalSince(start), 0.15, "sidebar counts must stay cheap")
     }
+
+    func testOpenCachedConversation() throws {
+        let db = try database()
+        let start = Date()
+        let conversation = try db.reader.read { db in try ConversationQueries.conversation(db, accountID: "acc", threadID: "t000100") }
+        XCTAssertNotNil(conversation)
+        XCTAssertLessThan(Date().timeIntervalSince(start), 0.05, "opening a cached thread must read in under 50 ms")
+    }
 }

@@ -86,3 +86,18 @@ is never touched.
 ## D13. Line length 160 (M2)
 
 SQL inside Swift strings made 140 columns impractical; SwiftLint and SwiftFormat use 160.
+
+## D14. Reader details (M4)
+
+- WebKit pieces that can be tested headless (configuration, rule list, measuring script,
+  `swiftmail-cid` handler, attachment loader) live in core `Rendering`; the pool and SwiftUI
+  wrappers live in `Features/Reader`.
+- Quoted text collapses with a native `<details>` element, which works with page JavaScript off.
+- Remote images, when allowed, include `http:` as well as `https:`: plenty of real mail still
+  uses http image URLs. Tracking pixels are removed from the stored HTML, so they never load.
+- All `<link>` and `<meta>` elements are removed (the app writes its own CSP meta).
+- Fixed-width mail wider than the card is scaled down with a CSS transform by the app's own
+  script, as Mimestream does, instead of scrolling sideways.
+- Debug builds take `--snapshot <name.png> [--select n] [--appearance dark|light]` to render the
+  window (webviews included) into the container's tmp folder, for visual review without screen
+  recording permission.

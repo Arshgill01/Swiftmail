@@ -19,12 +19,18 @@ final class AppModel {
     @ObservationIgnored private var observations: [Task<Void, Never>] = []
     @ObservationIgnored private var startedSessions: Set<String> = []
     @ObservationIgnored let triggers: SyncTriggers
+    @ObservationIgnored let readerServices: ReaderServices
     @ObservationIgnored let logger = Logger(subsystem: "app.swiftmail", category: "App")
 
     init(database: AppDatabase, accountManager: AccountManager) {
         self.database = database
         self.accountManager = accountManager
         triggers = SyncTriggers { await accountManager.allSessions() }
+        readerServices = ReaderServices { accountID, messageID, contentID in
+            guard let session = await accountManager.session(for: accountID) else { throw GmailError.notFound }
+            return try await AttachmentLoader(database: database, client: session.client)
+                .inlineImage(accountID: accountID, messageID: messageID, contentID: contentID)
+        }
     }
 
     static func live() -> AppModel {
@@ -67,6 +73,7 @@ final class AppModel {
         observeAccounts()
         observeSidebar()
         triggers.start()
+        readerServices.prewarm()
         Task {
             do {
                 for session in try await accountManager.restoreSessions() {
