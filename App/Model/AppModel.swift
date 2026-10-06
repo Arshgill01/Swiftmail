@@ -27,7 +27,8 @@ final class AppModel {
         do {
             database = try AppDatabase.openDefault()
         } catch {
-            Logger(subsystem: "app.swiftmail", category: "App").fault("database open failed: \(String(describing: error), privacy: .public)")
+            Logger(subsystem: "app.swiftmail", category: "App")
+                .fault("database open failed: \(String(describing: error), privacy: .public)")
             // Fall back to memory so the app still opens and can show the error.
             database = (try? AppDatabase.inMemory()) ?? { fatalError("SQLite unavailable") }()
         }
@@ -40,7 +41,9 @@ final class AppModel {
         return AppModel(database: database, accountManager: manager)
     }
 
-    var isOAuthConfigured: Bool { OAuthConfig.fromBundle() != nil }
+    var isOAuthConfigured: Bool {
+        OAuthConfig.fromBundle() != nil
+    }
 
     func start() {
         observeAccounts()

@@ -35,7 +35,9 @@ struct AccountsSettingsView: View {
                 HStack {
                     Button(model.isSigningIn ? "Waiting for browser…" : "Add Gmail Account…") { model.addAccount() }
                         .disabled(model.isSigningIn || !model.isOAuthConfigured)
-                    if model.isSigningIn { ProgressView().controlSize(.small) }
+                    if model.isSigningIn {
+                        ProgressView().controlSize(.small)
+                    }
                 }
                 if let error = model.lastError {
                     Text(error).foregroundStyle(.red).font(.callout)
@@ -45,7 +47,11 @@ struct AccountsSettingsView: View {
         .formStyle(.grouped)
         .confirmationDialog(
             "Remove \(pendingRemoval?.email ?? "account")?",
-            isPresented: Binding(get: { pendingRemoval != nil }, set: { if !$0 { pendingRemoval = nil } }),
+            isPresented: Binding(get: { pendingRemoval != nil }, set: {
+                if !$0 {
+                    pendingRemoval = nil
+                }
+            }),
             presenting: pendingRemoval
         ) { account in
             Button("Remove Account", role: .destructive) { model.removeAccount(account.id) }

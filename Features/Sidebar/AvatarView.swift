@@ -32,7 +32,9 @@ enum AvatarPalette {
         let source = name.isEmpty ? email : name
         let words = source.split { $0 == " " || $0 == "." || $0 == "_" }.filter { $0.first?.isLetter == true }
         let letters = words.prefix(2).compactMap(\.first)
-        if letters.isEmpty { return String(source.prefix(1)).uppercased() }
+        if letters.isEmpty {
+            return String(source.prefix(1)).uppercased()
+        }
         return String(letters).uppercased()
     }
 
