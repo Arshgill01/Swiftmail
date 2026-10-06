@@ -11,6 +11,14 @@ struct ThreadListView: View {
     @AppStorage(Preferences.listDensity) private var densityRaw = ListDensity.comfortable.rawValue
 
     var body: some View {
+        if window.mailbox?.kind == .outbox {
+            OutboxListView().navigationTitle("Outbox")
+        } else {
+            threadList
+        }
+    }
+
+    private var threadList: some View {
         VStack(spacing: 0) {
             NeedsSignInBanner()
             if showsCategoryBar {

@@ -37,8 +37,14 @@
                     }
                     try? await Task.sleep(for: .seconds(1))
                 }
-                if let window = NSApp.windows.first(where: { $0.isVisible && $0.contentView != nil }) {
-                    window.setContentSize(NSSize(width: 1400, height: 900))
+                // `--snapshot-window compose` captures a compose window instead of the main one.
+                let wanted = argument("--snapshot-window")
+                let candidates = NSApp.windows.filter { $0.isVisible && $0.contentView != nil }
+                let target = wanted.flatMap { name in candidates.first { $0.identifier?.rawValue.hasPrefix(name) == true } } ?? candidates.first
+                if let window = target {
+                    if wanted == nil {
+                        window.setContentSize(NSSize(width: 1400, height: 900))
+                    }
                     try? await Task.sleep(for: .milliseconds(800))
                     await write(window, to: path)
                 }

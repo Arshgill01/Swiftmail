@@ -2,6 +2,7 @@ import AppKit
 import GRDB
 import os
 import SwiftmailCore
+import SwiftUI
 
 /// App-wide state shared by every window: the database, accounts, their sessions,
 /// sync status and the sidebar snapshot.
@@ -22,6 +23,10 @@ final class AppModel {
     @ObservationIgnored let readerServices: ReaderServices
     let undo = UndoCenter()
     @ObservationIgnored let keyboard = KeyboardShortcuts()
+    @ObservationIgnored var openWindowAction: OpenWindowAction?
+    @ObservationIgnored var reopenedCompose = false
+    /// The app's single model, for the app delegate (quit and mailto).
+    @ObservationIgnored nonisolated(unsafe) weak static var shared: AppModel?
     @ObservationIgnored let logger = Logger(subsystem: "app.swiftmail", category: "App")
 
     init(database: AppDatabase, accountManager: AccountManager) {
@@ -52,7 +57,9 @@ final class AppModel {
             transport: URLSessionTransport(),
             syncSettings: { Preferences.syncSettings }
         )
-        return AppModel(database: database, accountManager: manager)
+        let model = AppModel(database: database, accountManager: manager)
+        shared = model
+        return model
     }
 
     var isOAuthConfigured: Bool {

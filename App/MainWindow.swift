@@ -5,6 +5,7 @@ struct MainWindow: View {
     @Environment(AppModel.self) private var model
     @State private var window = MainWindowModel()
     @State private var columnVisibility = NavigationSplitViewVisibility.all
+    @Environment(\.openWindow) private var openWindow
 
     var body: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
@@ -29,7 +30,11 @@ struct MainWindow: View {
         }
         .background(WindowAccessor { WindowRegistry.register($0, model: window) })
         .focusedSceneValue(\.mainWindow, window)
-        .onAppear { window.app = model }
+        .onAppear {
+            window.app = model
+            model.openWindowAction = openWindow
+            model.reopenUnsentCompose()
+        }
     }
 }
 
@@ -67,9 +72,16 @@ struct ToastView: View {
             HStack(spacing: 12) {
                 Text(toast.message)
                 if toast.canUndo {
-                    Button("Undo") { model.undoLast() }
-                        .buttonStyle(.link)
-                        .keyboardShortcut("z", modifiers: .command)
+                    Button("Undo") {
+                        if let onUndo = toast.onUndo {
+                            model.undo.dismiss()
+                            onUndo()
+                        } else {
+                            model.undoLast()
+                        }
+                    }
+                    .buttonStyle(.link)
+                    .keyboardShortcut("z", modifiers: .command)
                 }
                 Button {
                     model.undo.dismiss()

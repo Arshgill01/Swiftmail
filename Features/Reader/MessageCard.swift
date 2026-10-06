@@ -64,10 +64,14 @@ struct MessageCard: View {
                 .foregroundStyle(.secondary)
                 .help(date.formatted(date: .complete, time: .standard))
             if expanded {
+                if message.message.isDraft {
+                    Button("Edit") { model.editDraft(message, threadID: message.message.threadId) }
+                        .controlSize(.small)
+                }
                 Menu {
-                    Button("Reply") {}.disabled(true)
-                    Button("Reply All") {}.disabled(true)
-                    Button("Forward") {}.disabled(true)
+                    Button("Reply") { model.reply(.reply, to: message, threadID: message.message.threadId) }
+                    Button("Reply All") { model.reply(.replyAll, to: message, threadID: message.message.threadId) }
+                    Button("Forward") { model.reply(.forward, to: message, threadID: message.message.threadId) }
                 } label: {
                     Image(systemName: "ellipsis.circle")
                 }

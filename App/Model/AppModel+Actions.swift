@@ -54,13 +54,15 @@ extension AppModel {
         )
     }
 
-    /// Compose (M6) and search (M7) hooks.
+    /// Compose commands from shortcuts and menus; search (M7) focuses the field.
     func handleComposeOrSearch(_ command: MailCommand, window: MainWindowModel) {
         switch command {
-        case .search:
-            window.isSearchFocused = true
-        default:
-            NSSound.beep()
+        case .compose: newMessage(accountID: window.mailbox?.accountID ?? window.focusedThread?.accountID)
+        case .reply: reply(.reply, window: window)
+        case .replyAll: reply(.replyAll, window: window)
+        case .forward: reply(.forward, window: window)
+        case .search: window.isSearchFocused = true
+        default: break
         }
     }
 }

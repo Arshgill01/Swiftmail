@@ -20,6 +20,13 @@ struct SwiftmailApp: App {
         .defaultSize(width: 1200, height: 760)
         .commands { MailCommands(app: model) }
 
+        WindowGroup("New Message", id: "compose", for: UUID.self) { $id in
+            ComposeWindow(id: id)
+                .environment(model)
+        }
+        .defaultSize(width: 720, height: 600)
+        .commandsRemoved()
+
         Settings {
             SettingsView()
                 .environment(model)

@@ -1,11 +1,18 @@
 import Foundation
 import SwiftmailCore
 
-/// The on-screen toast with an optional Undo, shown for 8 seconds.
+/// The on-screen toast with an optional Undo, shown for 8 seconds (or the undo-send delay).
 struct Toast: Identifiable, Equatable {
     let id = UUID()
     let message: String
     let canUndo: Bool
+    var duration: Duration = .seconds(8)
+    /// A custom undo (undo send); nil undoes the last action.
+    var onUndo: (@MainActor () -> Void)?
+
+    static func == (lhs: Toast, rhs: Toast) -> Bool {
+        lhs.id == rhs.id
+    }
 }
 
 /// Remembers recent actions so Command-Z, `z` and the toast can undo them.
@@ -35,7 +42,7 @@ final class UndoCenter {
         self.toast = toast
         dismissTask?.cancel()
         dismissTask = Task { [weak self] in
-            try? await Task.sleep(for: Self.toastDuration)
+            try? await Task.sleep(for: toast.duration)
             guard !Task.isCancelled else { return }
             self?.toast = nil
         }

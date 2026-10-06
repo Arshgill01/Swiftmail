@@ -48,7 +48,7 @@ struct ReaderView: View {
                                 }
                             }
                     }
-                    ConversationFooter()
+                    ConversationFooter(window: window)
                 }
                 .padding(.horizontal, 20)
                 .padding(.vertical, 16)
@@ -112,13 +112,14 @@ struct ConversationHeader: View {
 }
 
 struct ConversationFooter: View {
+    let window: MainWindowModel
+
     var body: some View {
         HStack {
-            Button("Reply", systemImage: "arrowshape.turn.up.left") {}
-            Button("Reply All", systemImage: "arrowshape.turn.up.left.2") {}
-            Button("Forward", systemImage: "arrowshape.turn.up.right") {}
+            Button("Reply", systemImage: "arrowshape.turn.up.left") { window.perform(.reply) }
+            Button("Reply All", systemImage: "arrowshape.turn.up.left.2") { window.perform(.replyAll) }
+            Button("Forward", systemImage: "arrowshape.turn.up.right") { window.perform(.forward) }
         }
-        .disabled(true)
         .padding(.top, 6)
     }
 }

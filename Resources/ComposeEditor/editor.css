@@ -1,0 +1,15 @@
+:root { color-scheme: light dark; }
+html, body { margin: 0; padding: 0; height: 100%; background: transparent; }
+body { font: 14px -apple-system, BlinkMacSystemFont, system-ui, sans-serif; line-height: 1.45; color: #1d1d1f; }
+#editor { min-height: 100%; padding: 14px 18px 40px; outline: none; box-sizing: border-box; overflow-wrap: anywhere; }
+#editor:empty::before { content: attr(data-placeholder); color: #999; }
+#editor img { max-width: 100%; height: auto; }
+#editor blockquote { margin: 0 0 0 0.8ex; border-left: 1px solid #ccc; padding-left: 1ex; }
+#editor a { color: #0a66d0; }
+.gmail_signature, .gmail_signature_prefix { color: #555; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e8ea; }
+  #editor a { color: #6cb0ff; }
+  .gmail_signature, .gmail_signature_prefix { color: #aaa; }
+  #editor blockquote { border-left-color: #555; }
+}

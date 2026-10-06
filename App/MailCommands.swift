@@ -10,8 +10,14 @@ struct MailCommands: Commands {
 
     var body: some Commands {
         CommandGroup(replacing: .newItem) {
-            Button("New Message") { window?.perform(.compose) ?? app.handleComposeOrSearch(.compose, window: MainWindowModel()) }
-                .keyboardShortcut("n")
+            Button("New Message") {
+                if let window {
+                    window.perform(.compose)
+                } else {
+                    app.newMessage()
+                }
+            }
+            .keyboardShortcut("n")
             Button("New Window") { openWindow(id: "main") }
                 .keyboardShortcut("n", modifiers: [.command, .option])
         }

@@ -103,3 +103,20 @@ struct ReplyTests {
         #expect(state.validationError()?.contains("25 MB") == true)
     }
 }
+
+struct MailtoTests {
+    @Test func parsesAllFields() throws {
+        let url =
+            try #require(
+                URL(string: "mailto:alex@example.com,bo@example.com?cc=cy@example.com&bcc=d@example.com&subject=Hello%20there&body=Line%201%0D%0ALine%202")
+            )
+        let link = try #require(MailtoLink(url))
+        #expect(link.to.map(\.email) == ["alex@example.com", "bo@example.com"])
+        #expect(link.cc.map(\.email) == ["cy@example.com"])
+        #expect(link.bcc.map(\.email) == ["d@example.com"])
+        #expect(link.subject == "Hello there")
+        #expect(link.body == "Line 1\nLine 2")
+        #expect(try MailtoLink(#require(URL(string: "https://example.com"))) == nil)
+        #expect(try MailtoLink(#require(URL(string: "mailto:a+tag@example.com")))?.to.first?.email == "a+tag@example.com")
+    }
+}

@@ -87,14 +87,14 @@ listed per milestone and tracked here until ticked.
 
 ## M6: Compose
 
-- [ ] MIME builder (RFC 5322/2047/2231, structure rules, plain-text from HTML), golden tests
-- [ ] Reply/reply-all/forward rules, alias selection, quoting, signatures
-- [ ] Editor page + JS bridge, formatting bar, paste cleaning, inline images
-- [ ] Compose window: From picker, token fields with autocomplete, subject, attachments (25 MB)
-- [ ] Local drafts from first keystroke, reopen on launch; Gmail draft create/update/delete
-- [ ] Send: outbox file, held `send` action, undo-send toast, media upload > 5 MB, Outbox mailbox
-- [ ] Quit with held messages sends them first (up to 10 s)
-- [ ] `mailto:` handling
+- [x] MIME builder (RFC 5322/2047/2231, structure rules, plain text from HTML), golden and round-trip tests
+- [x] Reply/reply-all/forward rules, alias selection, Gmail quoting, signatures above the quote, forward header + attachments
+- [x] Editor page + JS bridge in its own content world (page JS off, CSP), formatting bar, ⌘B/I/U/K, paste cleaning, pasted/dropped images inline
+- [x] Compose window: From picker (hidden with one address), token fields with autocomplete, subject, attachments, 25 MB block
+- [x] Local drafts from the first keystroke, reopened on launch; Gmail draft create after 2 s, update ≤ every 3 s and on close; discard deletes
+- [x] Send: outbox file, held `send` row, "Sending… Undo" toast for the undo delay, media upload > 5 MB, Outbox mailbox with retry
+- [x] Quit with held messages sends them first (up to 10 s, "Sending 1 message…")
+- [x] `mailto:` handling (To, Cc, Bcc, Subject, Body); drafts from Gmail web open with Edit
 - [h] Human: reply threads in Gmail web; non-ASCII round trip; 20 MB attachment; quit during undo
 
 ## M7: Search

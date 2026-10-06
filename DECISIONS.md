@@ -114,3 +114,15 @@ SQL inside Swift strings made 140 columns impractical; SwiftLint and SwiftFormat
   account signs in again, instead of counting as failures.
 - Single-key shortcuts are read by an `NSEvent` local monitor on main windows; it ignores
   text views, text fields and token fields, and swallows the `g` of a go sequence.
+
+## D16. Compose details (M6)
+
+- The editor page allows no page scripts at all (`allowsContentJavaScript = false` plus a CSP);
+  `editor.js` runs as a `WKUserScript` in its own content world and drives the DOM with
+  `execCommand`. Quoted and pasted HTML is cleaned first, so nothing in it can execute.
+- Quoted originals drop remote images, which would otherwise load (and track) in the editor.
+- Pasted or dropped images live as `data:` URLs in the editor and become `cid:` inline parts
+  when the message is built; other dropped files become attachments.
+- Gmail drafts are created and updated directly from the compose window (user priority), not
+  through `pending_actions`; a failed sync is retried on the next change or on close.
+- All MIME parts use base64 transfer encoding (always 7-bit safe, lines of 76).

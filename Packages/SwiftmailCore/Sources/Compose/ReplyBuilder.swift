@@ -160,6 +160,10 @@ public enum ReplyBuilder {
         address.name.map { "\($0) <\(address.email)>" } ?? address.email
     }
 
+    public static func escapeHTML(_ text: String) -> String {
+        escape(text)
+    }
+
     static func escape(_ text: String) -> String {
         text.replacingOccurrences(of: "&", with: "&amp;").replacingOccurrences(of: "<", with: "&lt;").replacingOccurrences(of: ">", with: "&gt;")
     }
