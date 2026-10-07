@@ -26,7 +26,7 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
     func requestPermissionIfNeeded() {
         guard !UserDefaults.standard.bool(forKey: Self.askedKey) else { return }
         UserDefaults.standard.set(true, forKey: Self.askedKey)
-        center.requestAuthorization(options: [.alert, .sound, .badge]) { _, _ in }
+        center.requestAuthorization(options: [.alert, .sound, .badge]) { @Sendable _, _ in }
     }
 
     func post(_ plan: NotificationPlan) {
@@ -62,7 +62,8 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
 
     func remove(threads: [ThreadSummary.ID]) {
         let wanted = Set(threads.map { NotificationPolicy.threadIdentifier(accountID: $0.accountID, threadID: $0.threadID) })
-        center.getDeliveredNotifications { delivered in
+        // @Sendable: UserNotifications calls back on its own queue, not the main actor.
+        center.getDeliveredNotifications { @Sendable delivered in
             let ids = delivered.filter { wanted.contains($0.request.content.threadIdentifier) }.map(\.request.identifier)
             guard !ids.isEmpty else { return }
             UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: ids)
